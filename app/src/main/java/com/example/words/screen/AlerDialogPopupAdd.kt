@@ -57,6 +57,7 @@ import com.example.words.ui.theme.GreyLight
 import com.example.words.ui.theme.LightBrown
 import com.example.words.ui.theme.LightGrey
 import com.example.words.ui.theme.TextFieldBorder
+import com.example.words.ui.theme.blue
 import com.example.words.ui.theme.light_tangerine
 import com.example.words.ui.theme.tickColor
 import com.example.words.ui.theme.white
@@ -83,7 +84,7 @@ fun AlerDialogPopupAdd(openDialog: Boolean, onEvent: (Event) -> Unit) {
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.5f))
                     .clickable(onClick = { openDialog == false })
-                    .padding(start = 16.dp, end = 16.dp, bottom = 28.dp)
+                    .padding(start = 16.dp, end = 16.dp, bottom = 38.dp)
 
             ) {
                 Box(
@@ -109,6 +110,12 @@ fun AlerDialogPopupAdd(openDialog: Boolean, onEvent: (Event) -> Unit) {
                                 modifier = Modifier.padding(top = 5.dp, bottom = 20.dp)
                             )
                             OutlinedTextField(
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    textColor = blue,
+                                    backgroundColor = Color.White,
+                                    focusedBorderColor = tickColor
+
+                                ),
                                 value = texts,
                                 onValueChange = {
                                     // Filtrar solo los caracteres numéricos y limitar la longitud
@@ -120,7 +127,7 @@ fun AlerDialogPopupAdd(openDialog: Boolean, onEvent: (Event) -> Unit) {
                                     }
 
                                 },
-                                label = { Text("Ingrese solo números") },
+                                label = { Text("Horas") },
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                             )
 

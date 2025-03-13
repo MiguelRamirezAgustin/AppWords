@@ -134,10 +134,14 @@ fun CrudScreenSetup(viewModel: WeeksViewModel, navController: NavController) {
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                FloatingActionButton(onClick = {
+                FloatingActionButton(
+                    modifier = Modifier.background(Color.White),
+                    containerColor = Color.White,
+                    onClick = {
                     viewModel.onEvent(Event.Load(null))
                 }) {
                     Icon(
+                        tint = Color.Unspecified,
                         imageVector = Icons.Default.Add,
                         contentDescription = "New note"
                     )
@@ -206,22 +210,9 @@ fun CrudScreen(
         ) {
             LazyColumn {
                 item {
-                    Column(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(top = 20.dp, bottom = 10.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                    Column(Modifier.padding(start = 25.dp, top = 30.dp)) {
                         Text(
-                            text = "Dias", color = blue, fontSize = 24.sp,
-                            fontWeight = FontWeight.Medium,
-                        )
-                    }
-                }
-                item {
-                    Column(Modifier.padding(start = 25.dp, top = 20.dp)) {
-                        Text(
-                            "Total de horas: " + ishours, color = blue, fontSize = 28.sp,
+                            "Horas: " + ishours, color = blue, fontSize = 28.sp,
                             fontWeight = FontWeight.Normal
                         )
                     }
@@ -229,7 +220,7 @@ fun CrudScreen(
                 item {
                     Column(Modifier.padding(start = 25.dp, top = 20.dp)) {
                         Text(
-                            "Pago $: " + ishours * 28, color = blue, fontSize = 25.sp,
+                            "Pago: $ " + ishours * 28, color = blue, fontSize = 25.sp,
                             fontWeight = FontWeight.Normal
                         )
                     }

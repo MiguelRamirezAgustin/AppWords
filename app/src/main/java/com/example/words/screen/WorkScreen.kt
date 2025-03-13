@@ -1,23 +1,34 @@
 package com.example.words.screen
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -29,13 +40,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.words.Model.Event
+import com.example.words.R
+import com.example.words.navigation.Screen
 import com.example.words.ui.theme.LightBrown
 import com.example.words.ui.theme.blue
 import com.example.words.ui.theme.tickColor
@@ -44,7 +60,25 @@ import com.example.words.ui.theme.tickColor
 fun WorkScreen(navController: NavController) {
 
     Scaffold(
-        topBar = {},
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Semana",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = {}) {
+                        Icon(Icons.Filled.ArrowBack, "backIcon")
+                    }
+                },
+                backgroundColor = Color.White,
+                contentColor = Color.Black,
+                modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
+            )
+        },
         floatingActionButton = {},
         content = { paddingValues ->
             // Contenido principal de la pantalla
@@ -83,7 +117,8 @@ fun maincontent(paddingValues: PaddingValues) {
 
     Column(modifier = Modifier.padding(paddingValues)) {
         Column(
-            modifier = Modifier.padding(top = 30.dp, bottom = 10.dp)
+            modifier = Modifier
+                .padding(top = 20.dp, bottom = 10.dp)
                 .fillMaxWidth()
         ) {
             Column(
@@ -91,14 +126,67 @@ fun maincontent(paddingValues: PaddingValues) {
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text("Precios:", fontSize = 30.sp)
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Row {
+                            Text("Mecedora Grande", color = blue, fontSize = 16.sp)
+                            Text(
+                                " : $33", color = blue, fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                        Row {
+                            Text("Mecedora Chica", color = blue, fontSize = 16.sp)
+                            Text(
+                                " : $33", color = blue, fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Row {
+                            Text("Sillas Individual", color = blue, fontSize = 16.sp)
+                            Text(
+                                " : $28", color = blue, fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Row {
+                            Text("Papelero", color = blue, fontSize = 16.sp)
+                            Text(
+                                " : $19.5", color = blue, fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Row {
+                            Text("Listonero", color = blue, fontSize = 16.sp)
+                            Text(
+                                " :$18", color = blue, fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                        }
+                    }
+                    Column(modifier = Modifier.weight(1f)) {
+                        Image(
+                            painter = painterResource(id = R.drawable.soldador),
+                            contentDescription = "image description",
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier
+                                .width(80.dp)
+                                .height(80.dp)
+                                .align(Alignment.CenterHorizontally)
+
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.height(10.dp))
-                Text("* Mecedora Grande: $33", fontSize = 16.sp)
-                Text("* Mecedora Chica: $33", fontSize = 16.sp)
-                Text("* Sillas Individual: $28", fontSize = 16.sp)
-                Text("* Papelero: $19.5", fontSize = 16.sp)
-                Text("* Listonero: $18", fontSize = 16.sp)
-                Spacer(modifier = Modifier.height(10.dp))
+
+                Text(
+                    modifier = Modifier
+                        .padding(top = 15.dp, end = 20.dp, start = 20.dp)
+                        .align(Alignment.CenterHorizontally),
+                    text = "Total: $ ${isTotal}",
+                    fontSize = 24.sp
+                )
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -119,7 +207,7 @@ fun maincontent(paddingValues: PaddingValues) {
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(15.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -181,13 +269,7 @@ fun maincontent(paddingValues: PaddingValues) {
 
                 }
             }
-            Text(
-                modifier = Modifier
-                    .padding(top = 15.dp, end = 20.dp, start = 20.dp)
-                    .align(Alignment.CenterHorizontally),
-                text = "Total: $ ${isTotal}",
-                fontSize = 24.sp
-            )
+
         }
 
     }
@@ -210,13 +292,22 @@ fun EditableInfoRow(label: String, value: String, onValueChange: (String) -> Uni
             modifier = Modifier.weight(2f)
         )
         OutlinedTextField(
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                textColor = blue,
+                backgroundColor = Color.White,
+                focusedBorderColor = tickColor
+
+            ),
             value = value,
             singleLine = true,
             onValueChange = {
                 Log.d("Valor", "number: $it")
                 onValueChange(it)
             },
-            modifier = Modifier.weight(1f).background(Color.White),
+            modifier = Modifier
+                .weight(1f)
+                .background(Color.White),
+            label = { androidx.compose.material3.Text("Piezas") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
     }
