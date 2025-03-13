@@ -55,6 +55,24 @@ dependencies {
     implementation("androidx.room:room-runtime:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
+    // Para ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
+
+    implementation ("androidx.navigation:navigation-compose:2.4.0-alpha10")
+    implementation("androidx.compose.runtime:runtime-livedata:1.0.0")
+    // Para LiveData
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+
+    implementation("androidx.compose.material:material:1.4.3")
+    // Para Lifecycle
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
+
+    // Para SavedStateViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.7")
+
+    // Si utilizas Java 8 o superior, puedes agregar esta dependencia para evitar el uso de 'annotationProcessor'
+    implementation("androidx.lifecycle:lifecycle-common-java8:2.8.7")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
