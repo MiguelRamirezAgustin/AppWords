@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
@@ -138,8 +139,8 @@ fun CrudScreenSetup(viewModel: WeeksViewModel, navController: NavController) {
                     modifier = Modifier.background(Color.White),
                     containerColor = Color.White,
                     onClick = {
-                    viewModel.onEvent(Event.Load(null))
-                }) {
+                        viewModel.onEvent(Event.Load(null))
+                    }) {
                     Icon(
                         tint = Color.Unspecified,
                         imageVector = Icons.Default.Add,
@@ -164,6 +165,18 @@ fun CrudScreenSetup(viewModel: WeeksViewModel, navController: NavController) {
                             }
                     )
                 }
+                FloatingActionButton(
+                    modifier = Modifier.background(Color.White),
+                    containerColor = Color.White,
+                    onClick = {
+                        navController.navigate(Screen.ListChairs.route)
+                    }) {
+                    Icon(
+                        tint = Color.Unspecified,
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "New note"
+                    )
+                }
 
             }
 
@@ -175,7 +188,8 @@ fun CrudScreenSetup(viewModel: WeeksViewModel, navController: NavController) {
         CrudScreen(
             all = all,
             openDialog = viewModel.openDialog,
-            onEvent = { viewModel.onEvent(it) }
+            onEvent = { viewModel.onEvent(it) },
+            onEventNavigate = { navController.navigate(Screen.PaintScreen.route) }
         )
     }
 
@@ -188,6 +202,7 @@ fun CrudScreen(
     all: List<Weeks>,
     openDialog: Boolean,
     onEvent: (Event) -> Unit,
+    onEventNavigate: () -> Unit
 ) {
     var ishours = 0
     all.forEach { action ->
@@ -196,7 +211,7 @@ fun CrudScreen(
 
     Box(
         modifier = Modifier
-            .padding(top = 50.dp)
+            .padding(top = 40.dp)
             .fillMaxSize()
             .background(Color.White),
         contentAlignment = Alignment.Center
@@ -209,22 +224,49 @@ fun CrudScreen(
                 .height(40.dp)
         ) {
             LazyColumn {
+
                 item {
-                    Column(Modifier.padding(start = 25.dp, top = 30.dp)) {
-                        Text(
-                            "Horas: " + ishours, color = blue, fontSize = 28.sp,
-                            fontWeight = FontWeight.Normal
-                        )
+                    Row(
+                        Modifier
+                            .padding(start = 25.dp, top = 30.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                        ) {
+                            Text(
+                                "Horas: " + ishours, color = blue, fontSize = 28.sp,
+                                fontWeight = FontWeight.Normal
+                            )
+                            Text(
+                                "Pago: $ " + ishours * 28, color = blue, fontSize = 25.sp,
+                                fontWeight = FontWeight.Normal
+                            )
+                        }
+
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                        ) {
+
+                            Image(
+                                painter = painterResource(id = R.drawable.car_painting),
+                                contentDescription = "image description",
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier
+                                    .width(50.dp)
+                                    .height(50.dp)
+                                    .align(Alignment.CenterHorizontally)
+                                    .clickable {
+                                        onEventNavigate()
+                                    }
+
+                            )
+
+                        }
                     }
                 }
-                item {
-                    Column(Modifier.padding(start = 25.dp, top = 20.dp)) {
-                        Text(
-                            "Pago: $ " + ishours * 28, color = blue, fontSize = 25.sp,
-                            fontWeight = FontWeight.Normal
-                        )
-                    }
-                }
+
                 items(all) {
                     Card(
                         modifier = Modifier
@@ -235,7 +277,7 @@ fun CrudScreen(
                             ) {
 
                             }
-                            .height(100.dp),
+                            .height(90.dp),
                         shape = RoundedCornerShape(12.dp),
                         elevation = 9.dp,
                         backgroundColor = Color.LightGray
@@ -254,7 +296,7 @@ fun CrudScreen(
                                 Text(
                                     modifier = Modifier.padding(
                                         start = 8.dp,
-                                        top = 8.dp,
+                                        top = 5.dp,
                                         end = 15.dp
                                     ),
                                     textAlign = TextAlign.Start,
@@ -274,7 +316,7 @@ fun CrudScreen(
                                 Text(
                                     modifier = Modifier.padding(
                                         start = 8.dp,
-                                        top = 25.dp,
+                                        top = 15.dp,
                                         bottom = 15.dp
                                     ),
                                     textAlign = TextAlign.Start,
@@ -345,6 +387,26 @@ fun FormatearFecha(fechaOriginal: String): String {
     // Definir el patrón del formato de la fecha deseada
     val formatoSalida =
         DateTimeFormatter.ofPattern("eee / mm / yy '\n' hh:mm a", Locale("es", "MX"))
+
+    // Parsear la fecha original al objeto LocalDateTime
+    val fecha = remember { LocalDateTime.parse(fechaOriginal, formatoEntrada) }
+    // Formatear la fecha al formato deseado
+    val fechaFormateada = remember { fecha.format(formatoSalida) }
+
+    // Mostrar la fecha formateada en un componente Text
+
+    return fechaFormateada
+}
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun FormatearFechaDay(fechaOriginal: String): String {
+    // Definir el patrón del formato de la fecha original
+    val formatoEntrada = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH)
+    // Definir el patrón del formato de la fecha deseada
+    val formatoSalida =
+        DateTimeFormatter.ofPattern("EEE/mm/yy", Locale("es", "MX"))
 
     // Parsear la fecha original al objeto LocalDateTime
     val fecha = remember { LocalDateTime.parse(fechaOriginal, formatoEntrada) }

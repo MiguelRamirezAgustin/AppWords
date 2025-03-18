@@ -1,5 +1,6 @@
 package com.example.words.screen
 
+import android.app.Application
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,9 +31,11 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +44,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -48,16 +53,22 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.words.Model.ChairsViewModel
 import com.example.words.Model.Event
+import com.example.words.Model.WeeksViewModel
+import com.example.words.Model.WeksViewModelFactory
 import com.example.words.R
+import com.example.words.db.model.Chairs
 import com.example.words.navigation.Screen
 import com.example.words.ui.theme.LightBrown
 import com.example.words.ui.theme.blue
 import com.example.words.ui.theme.tickColor
 
 @Composable
-fun WorkScreen(navController: NavController) {
+fun WorkScreen( navController: NavController,viewModel: ChairsViewModel) {
 
     Scaffold(
         topBar = {
@@ -70,7 +81,7 @@ fun WorkScreen(navController: NavController) {
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = {navController.popBackStack()}) {
                         Icon(Icons.Filled.ArrowBack, "backIcon")
                     }
                 },
@@ -82,14 +93,17 @@ fun WorkScreen(navController: NavController) {
         floatingActionButton = {},
         content = { paddingValues ->
             // Contenido principal de la pantalla
-            maincontent(paddingValues)
+            maincontent(viewModel,paddingValues, navController)
+
         }
     )
 }
 
 
 @Composable
-fun maincontent(paddingValues: PaddingValues) {
+fun maincontent( viewModel: ChairsViewModel,  paddingValues: PaddingValues, navController: NavController) {
+
+
     var isTotal by remember { mutableStateOf(0.0) }
     val formData = remember {
         mutableStateMapOf(
@@ -97,7 +111,8 @@ fun maincontent(paddingValues: PaddingValues) {
             "Mecedora Chica" to "",
             "Silla individual" to "",
             "Papelera" to "",
-            "Listonero" to ""
+            "Listonero" to "",
+            "Botaneros" to ""
         )
     }
 
@@ -110,6 +125,7 @@ fun maincontent(paddingValues: PaddingValues) {
                 "Silla individual" -> cantidad * 28.0
                 "Papelera" -> cantidad * 19.5
                 "Listonero" -> cantidad * 18.0
+                "Botaneros" -> cantidad * 19.0
                 else -> 0.0
             }
         }
@@ -159,7 +175,15 @@ fun maincontent(paddingValues: PaddingValues) {
                         Row {
                             Text("Listonero", color = blue, fontSize = 16.sp)
                             Text(
-                                " :$18", color = blue, fontSize = 16.sp,
+                                " : $18", color = blue, fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                        }
+                        Row {
+                            Text("Botanero", color = blue, fontSize = 16.sp)
+                            Text(
+                                " : $19", color = blue, fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
                             )
 
@@ -201,7 +225,6 @@ fun maincontent(paddingValues: PaddingValues) {
                                 Log.d("Print key ========>", " formData: ${formData[key]}")
                                 Log.d("Print key ========>", " newValue: ${newValue}")
                                 formData[key] = newValue
-
                                 calcularTotal()
                             }
                         )
@@ -216,12 +239,18 @@ fun maincontent(paddingValues: PaddingValues) {
                         BtnCustoms(
                             text = "Guardar",
                             onClick = {
-                                formData.forEach { (key, value) ->
-                                    Log.d(
-                                        "Print key ========>",
-                                        " Screeen::${key} Resul: ${value}"
-                                    )
-                                }
+                                viewModel.insertChair(
+                                    sillaGrnade = formData["Mecedora Grande"]?.toIntOrNull() ?: 0,
+                                    sillaChica = formData["Mecedora Chica"]?.toIntOrNull() ?: 0,
+                                    sillaindividual = formData["Silla individual"]?.toIntOrNull() ?: 0,
+                                    papelera = formData["Papelera"]?.toIntOrNull() ?: 0,
+                                    listonero = formData["Listonero"]?.toIntOrNull() ?: 0,
+                                    botanero = formData["Botaneros"]?.toIntOrNull() ?: 0,
+                                    sueldo = isTotal.toString()
+                                )
+
+                                navController.navigate(Screen.ListChairs.route)
+
                             },
                             colors = ButtonDefaults.buttonColors(
                                 disabledContainerColor = Color.White,
@@ -298,6 +327,10 @@ fun EditableInfoRow(label: String, value: String, onValueChange: (String) -> Uni
                 focusedBorderColor = tickColor
 
             ),
+            textStyle = TextStyle(
+                fontSize = 12.sp, // Cambia el tamaño del texto aquí
+                color = Color.Black // Opcional: Cambia el color del texto
+            ),
             value = value,
             singleLine = true,
             onValueChange = {
@@ -306,7 +339,9 @@ fun EditableInfoRow(label: String, value: String, onValueChange: (String) -> Uni
             },
             modifier = Modifier
                 .weight(1f)
+                .height(55.dp)
                 .background(Color.White),
+
             label = { androidx.compose.material3.Text("Piezas") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )

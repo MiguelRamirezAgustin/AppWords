@@ -6,6 +6,9 @@ sealed class Screen (val route:String, val argument: List<NamedNavArgument> = em
 
     object WeeksScreen : Screen("WeeksScreen")
     object WorkScreen : Screen("WorkScreen")
+    object ListChairs : Screen("ListChairs")
+    object PaintScreen : Screen("PaintScreen")
+
 
     companion object {
         fun getStartDestination() = WeeksScreen.route
