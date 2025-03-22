@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,24 +37,30 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.words.Model.ChairsViewModel
+import com.example.words.Model.PaintViewModel
+import com.example.words.ui.theme.LightBrown
 import com.example.words.ui.theme.blue
-import com.example.words.ui.theme.progressBlue
 
 @Composable
-fun ListChairs(navController: NavController, viewModel: ChairsViewModel) {
+fun ListPaint(navController: NavController, viewModel: PaintViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Lista de sillas armados",
+                        text = "Lista de pintura",
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
@@ -73,19 +78,18 @@ fun ListChairs(navController: NavController, viewModel: ChairsViewModel) {
         floatingActionButton = {},
         content = { paddingValues ->
             // Contenido principal de la pantalla
-            maincontentList(viewModel, paddingValues)
+            maincontentListPaint(viewModel, paddingValues)
 
         }
     )
 }
 
 @Composable
-fun maincontentList(viewModel: ChairsViewModel, paddingValues: PaddingValues) {
-    val scrollState = rememberScrollState()
+fun maincontentListPaint(viewModel: PaintViewModel, paddingValues: PaddingValues) {
     val chairs by viewModel.all.observeAsState()  // Escuchar cambios en la BD
+    val scrollState = rememberScrollState()
     Column(modifier = Modifier.padding(bottom = 30.dp, top = 10.dp)
-        .verticalScroll(scrollState) ) {
-        Spacer(modifier = Modifier.height(10.dp))
+        .verticalScroll(scrollState),) {
         chairs?.forEach { it ->
             Card(
                 modifier = Modifier
@@ -95,11 +99,11 @@ fun maincontentList(viewModel: ChairsViewModel, paddingValues: PaddingValues) {
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
                     ) {}
-                    .height(100.dp),
+                    .height(170.dp),
                 contentColor = Color.White,
-                border = BorderStroke(1.dp, progressBlue),
                 shape = RoundedCornerShape(12.dp),
                 elevation = 9.dp,
+                border = BorderStroke(1.dp, blue),
                 backgroundColor = Color.White
             ) {
                 Column(modifier = Modifier.fillMaxSize()) {
@@ -202,16 +206,27 @@ fun maincontentList(viewModel: ChairsViewModel, paddingValues: PaddingValues) {
                                 .background(Color.White),
                             verticalArrangement = Arrangement.Center,
                         ) {
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 3.dp),
-                                text = "Sueldo: $ " + it.sueldo,
+                            androidx.compose.material3.Text(
+                                modifier = Modifier.padding(
+                                    top = 3.dp,
+                                ),
+                                textAlign = TextAlign.Start,
+                                text = "Arañas: " + it.arana,
                                 color = blue,
                                 fontSize = 16.sp,
                                 lineHeight = 23.sp,
-                                fontWeight = FontWeight.Bold,
                                 style = TextStyle.Default,
+                            )
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 8.dp),
+                                text = "Total: $ " + it.total,
+                                color = blue,
+                                fontSize = 16.sp,
+                                lineHeight = 23.sp,
+                                style = TextStyle.Default,
+                                fontWeight = FontWeight.Bold
                             )
 
                             androidx.compose.material3.Text(
@@ -225,47 +240,92 @@ fun maincontentList(viewModel: ChairsViewModel, paddingValues: PaddingValues) {
                                 style = TextStyle.Default,
                             )
 
-                            Row(
-                                Modifier,
-                                verticalAlignment = Alignment.Bottom,
-                            ) {
-                                androidx.compose.material3.IconButton(
-                                    modifier = Modifier
-                                        .size(50.dp),
-                                    colors = IconButtonColors(
-                                        containerColor = Color.Transparent,
-                                        contentColor = Color.Red,
-                                        disabledContentColor = Color.White,
-                                        disabledContainerColor = Color.Red
-                                    ),
-                                    onClick = {
-                                        //onEvent(Event.Delete(it.id))
-                                        viewModel.deleteChair(it.id)
-                                    }) {
-                                    androidx.compose.material3.Icon(
-                                        Icons.Rounded.Delete,
-                                        contentDescription = null
-                                    )
-                                }
-                                androidx.compose.material3.IconButton(modifier = Modifier
-                                    .size(50.dp),
-                                    colors = IconButtonColors(
-                                        containerColor = Color.Transparent,
-                                        contentColor = Color.Blue,
-                                        disabledContentColor = Color.White,
-                                        disabledContainerColor = Color.Red
-                                    ), onClick = {
-                                        //onEvent(Event.Load(it.id))
-                                    }) {
-                                    androidx.compose.material3.Icon(
-                                        Icons.Rounded.Edit,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
+
                         }
                     }
 
+                    Row(
+                        modifier = Modifier.padding(
+                            start = 10.dp,
+                            top = 10.dp,
+                            end = 10.dp,
+                            bottom = 10.dp
+                        )
+                    ) {
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 16.sp,
+                                        color = blue,
+                                    )
+                                ) {
+                                    append(
+                                       "Nota: "
+                                    )
+                                }
+                                append(" ")
+                                pushStringAnnotation(
+                                    tag = "",
+                                    annotation = ""
+                                )
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = blue,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Bold,
+                                    )
+                                ) {
+                                    append( it.nota)
+                                }
+                            },
+                            fontFamily = FontFamily.Default,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp,
+                            lineHeight = 23.sp,
+                            color = LightBrown,
+                            modifier = Modifier.weight(3f),
+                            textAlign = TextAlign.Start,
+                        )
+                        Row(
+                            Modifier.weight(1f)
+                        ) {
+                            androidx.compose.material3.IconButton(
+                                modifier = Modifier
+                                    .size(50.dp),
+                                colors = IconButtonColors(
+                                    containerColor = Color.Transparent,
+                                    contentColor = Color.Red,
+                                    disabledContentColor = Color.White,
+                                    disabledContainerColor = Color.Red
+                                ),
+                                onClick = {
+                                    //onEvent(Event.Delete(it.id))
+                                    viewModel.deletePaint(it.id)
+                                }) {
+                                androidx.compose.material3.Icon(
+                                    Icons.Rounded.Delete,
+                                    contentDescription = null
+                                )
+                            }
+                            androidx.compose.material3.IconButton(modifier = Modifier
+                                .size(50.dp),
+                                colors = IconButtonColors(
+                                    containerColor = Color.Transparent,
+                                    contentColor = Color.Blue,
+                                    disabledContentColor = Color.White,
+                                    disabledContainerColor = Color.Red
+                                ), onClick = {
+                                    //onEvent(Event.Load(it.id))
+                                }) {
+                                androidx.compose.material3.Icon(
+                                    Icons.Rounded.Edit,
+                                    contentDescription = null
+                                )
+                            }
+                        }
+                    }
 
                 }
             }

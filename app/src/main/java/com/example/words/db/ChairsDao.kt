@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.example.words.db.model.Chairs
-import com.example.words.db.model.Weeks
 
 @Dao
 interface ChairsDao {

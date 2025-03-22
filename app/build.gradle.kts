@@ -63,7 +63,9 @@ dependencies {
     // Para LiveData
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+    implementation( "com.google.dagger:hilt-android:2.50")
 
+    implementation ("androidx.hilt:hilt-navigation-compose:1.1.0")
     implementation("androidx.compose.material:material:1.4.3")
     // Para Lifecycle
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")

@@ -22,6 +22,8 @@ data class Paint(
     @ColumnInfo(name = "listonero")
     var listonero: String,
     @ColumnInfo(name = "botanero")
+    var arana: String,
+    @ColumnInfo(name = "arana")
     var botanero: String,
     @ColumnInfo(name = "total")
     var total :String,

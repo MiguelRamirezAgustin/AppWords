@@ -68,7 +68,7 @@ import com.example.words.ui.theme.blue
 import com.example.words.ui.theme.tickColor
 
 @Composable
-fun WorkScreen( navController: NavController,viewModel: ChairsViewModel) {
+fun WorkScreen(navController: NavController, viewModel: ChairsViewModel) {
 
     Scaffold(
         topBar = {
@@ -81,7 +81,7 @@ fun WorkScreen( navController: NavController,viewModel: ChairsViewModel) {
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = {navController.popBackStack()}) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Filled.ArrowBack, "backIcon")
                     }
                 },
@@ -93,7 +93,7 @@ fun WorkScreen( navController: NavController,viewModel: ChairsViewModel) {
         floatingActionButton = {},
         content = { paddingValues ->
             // Contenido principal de la pantalla
-            maincontent(viewModel,paddingValues, navController)
+            maincontent(viewModel, paddingValues, navController)
 
         }
     )
@@ -101,18 +101,22 @@ fun WorkScreen( navController: NavController,viewModel: ChairsViewModel) {
 
 
 @Composable
-fun maincontent( viewModel: ChairsViewModel,  paddingValues: PaddingValues, navController: NavController) {
+fun maincontent(
+    viewModel: ChairsViewModel,
+    paddingValues: PaddingValues,
+    navController: NavController
+) {
 
 
     var isTotal by remember { mutableStateOf(0.0) }
     val formData = remember {
         mutableStateMapOf(
-            "Mecedora Grande" to "",
-            "Mecedora Chica" to "",
-            "Silla individual" to "",
             "Papelera" to "",
             "Listonero" to "",
-            "Botaneros" to ""
+            "Botaneros" to "",
+            "Mecedora G" to "",
+            "Silla ind" to "",
+            "Mecedora Ch" to "",
         )
     }
 
@@ -120,9 +124,9 @@ fun maincontent( viewModel: ChairsViewModel,  paddingValues: PaddingValues, navC
         isTotal = formData.entries.sumOf { (key, value) ->
             val cantidad = value.toIntOrNull() ?: 0
             when (key) {
-                "Mecedora Grande" -> cantidad * 33.0
-                "Mecedora Chica" -> cantidad * 33.0
-                "Silla individual" -> cantidad * 28.0
+                "Mecedora G" -> cantidad * 33.0
+                "Mecedora Ch" -> cantidad * 33.0
+                "Silla ind" -> cantidad * 28.0
                 "Papelera" -> cantidad * 19.5
                 "Listonero" -> cantidad * 18.0
                 "Botaneros" -> cantidad * 19.0
@@ -134,7 +138,7 @@ fun maincontent( viewModel: ChairsViewModel,  paddingValues: PaddingValues, navC
     Column(modifier = Modifier.padding(paddingValues)) {
         Column(
             modifier = Modifier
-                .padding(top = 20.dp, bottom = 10.dp)
+                .padding(top = 5.dp, bottom = 10.dp)
                 .fillMaxWidth()
         ) {
             Column(
@@ -143,28 +147,31 @@ fun maincontent( viewModel: ChairsViewModel,  paddingValues: PaddingValues, navC
                     .padding(16.dp)
             ) {
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.weight(1f)) {
+                    Column(modifier = Modifier.weight(2f)) {
                         Row {
-                            Text("Mecedora Grande", color = blue, fontSize = 16.sp)
+                            Text("Mecedora G.", color = blue, fontSize = 16.sp)
                             Text(
                                 " : $33", color = blue, fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                             )
                         }
                         Row {
-                            Text("Mecedora Chica", color = blue, fontSize = 16.sp)
+                            Text("Mecedora Ch.", color = blue, fontSize = 16.sp)
                             Text(
                                 " : $33", color = blue, fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }
                         Row {
-                            Text("Sillas Individual", color = blue, fontSize = 16.sp)
+                            Text("Sillas Ind.", color = blue, fontSize = 16.sp)
                             Text(
                                 " : $28", color = blue, fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }
+                    }
+                    Column(modifier = Modifier.weight(2f)) {
+
                         Row {
                             Text("Papelero", color = blue, fontSize = 16.sp)
                             Text(
@@ -195,8 +202,8 @@ fun maincontent( viewModel: ChairsViewModel,  paddingValues: PaddingValues, navC
                             contentDescription = "image description",
                             contentScale = ContentScale.Fit,
                             modifier = Modifier
-                                .width(80.dp)
-                                .height(80.dp)
+                                .width(70.dp)
+                                .height(70.dp)
                                 .align(Alignment.CenterHorizontally)
 
                         )
@@ -206,7 +213,7 @@ fun maincontent( viewModel: ChairsViewModel,  paddingValues: PaddingValues, navC
 
                 Text(
                     modifier = Modifier
-                        .padding(top = 15.dp, end = 20.dp, start = 20.dp)
+                        .padding(top = 10.dp, end = 20.dp, start = 20.dp)
                         .align(Alignment.CenterHorizontally),
                     text = "Total: $ ${isTotal}",
                     fontSize = 24.sp
@@ -214,35 +221,52 @@ fun maincontent( viewModel: ChairsViewModel,  paddingValues: PaddingValues, navC
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(end = 5.dp, start = 5.dp, top = 10.dp)
                 ) {
-                    formData.keys.forEach { key ->
-                        EditableInfoRow(
-                            label = key,
-                            value = formData[key] ?: "",
-                            onValueChange = { newValue ->
-                                Log.d("Print key ========>", " key: ${key}")
-                                Log.d("Print key ========>", " formData: ${formData[key]}")
-                                Log.d("Print key ========>", " newValue: ${newValue}")
-                                formData[key] = newValue
-                                calcularTotal()
+                    formData.keys.chunked(2).forEach { key ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(bottom = 15.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            key.forEach { item ->
+                                Column(
+                                    modifier = Modifier.weight(1f),
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+
+                                    EditableInfoRow(
+                                        label = item,
+                                        value = formData[item] ?: "",
+                                        onValueChange = { newValue ->
+                                            Log.d("Print key ========>", " key: ${key}")
+                                            Log.d(
+                                                "Print key ========>",
+                                                " formData: ${formData[item]}"
+                                            )
+                                            Log.d("Print key ========>", " newValue: ${newValue}")
+                                            formData[item] = newValue
+                                            calcularTotal()
+                                        }
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(10.dp))
                             }
-                        )
+                        }
+                        Spacer(modifier = Modifier.height(5.dp))
                     }
 
-                    Spacer(modifier = Modifier.height(20.dp))
 
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         BtnCustoms(
                             text = "Guardar",
                             onClick = {
                                 viewModel.insertChair(
-                                    sillaGrnade = formData["Mecedora Grande"]?.toIntOrNull() ?: 0,
-                                    sillaChica = formData["Mecedora Chica"]?.toIntOrNull() ?: 0,
-                                    sillaindividual = formData["Silla individual"]?.toIntOrNull() ?: 0,
+                                    sillaGrnade = formData["Mecedora G"]?.toIntOrNull() ?: 0,
+                                    sillaChica = formData["Mecedora Ch"]?.toIntOrNull() ?: 0,
+                                    sillaindividual = formData["Silla ind"]?.toIntOrNull() ?: 0,
                                     papelera = formData["Papelera"]?.toIntOrNull() ?: 0,
                                     listonero = formData["Listonero"]?.toIntOrNull() ?: 0,
                                     botanero = formData["Botaneros"]?.toIntOrNull() ?: 0,
@@ -309,8 +333,7 @@ fun maincontent( viewModel: ChairsViewModel,  paddingValues: PaddingValues, navC
 fun EditableInfoRow(label: String, value: String, onValueChange: (String) -> Unit) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -318,7 +341,7 @@ fun EditableInfoRow(label: String, value: String, onValueChange: (String) -> Uni
             color = blue,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.weight(2f)
+            modifier = Modifier.weight(1f)
         )
         OutlinedTextField(
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -328,7 +351,7 @@ fun EditableInfoRow(label: String, value: String, onValueChange: (String) -> Uni
 
             ),
             textStyle = TextStyle(
-                fontSize = 12.sp, // Cambia el tamaño del texto aquí
+                fontSize = 18.sp, // Cambia el tamaño del texto aquí
                 color = Color.Black // Opcional: Cambia el color del texto
             ),
             value = value,
@@ -339,7 +362,7 @@ fun EditableInfoRow(label: String, value: String, onValueChange: (String) -> Uni
             },
             modifier = Modifier
                 .weight(1f)
-                .height(55.dp)
+                .height(58.dp)
                 .background(Color.White),
 
             label = { androidx.compose.material3.Text("Piezas") },

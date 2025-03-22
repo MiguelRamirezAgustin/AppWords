@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +23,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -147,36 +150,7 @@ fun CrudScreenSetup(viewModel: WeeksViewModel, navController: NavController) {
                         contentDescription = "New note"
                     )
                 }
-                FloatingActionButton(
-                    modifier = Modifier.background(Color.White),
-                    containerColor = Color.White,
-                    onClick = {
-                        navController.navigate(Screen.WorkScreen.route)
-                    }) {
-                    Image(
-                        painter = painterResource(id = R.drawable.soldador),
-                        contentDescription = "image description",
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .width(24.dp)
-                            .height(24.dp)
-                            .clickable {
-                                navController.navigate(Screen.WorkScreen.route)
-                            }
-                    )
-                }
-                FloatingActionButton(
-                    modifier = Modifier.background(Color.White),
-                    containerColor = Color.White,
-                    onClick = {
-                        navController.navigate(Screen.ListChairs.route)
-                    }) {
-                    Icon(
-                        tint = Color.Unspecified,
-                        imageVector = Icons.Default.Check,
-                        contentDescription = "New note"
-                    )
-                }
+
 
             }
 
@@ -189,7 +163,8 @@ fun CrudScreenSetup(viewModel: WeeksViewModel, navController: NavController) {
             all = all,
             openDialog = viewModel.openDialog,
             onEvent = { viewModel.onEvent(it) },
-            onEventNavigate = { navController.navigate(Screen.PaintScreen.route) }
+            onEventNavigate = { navController.navigate(Screen.PaintScreen.route) },
+            onEventNavigateList = { navController.navigate(Screen.ListPaint.route) }
         )
     }
 
@@ -202,8 +177,10 @@ fun CrudScreen(
     all: List<Weeks>,
     openDialog: Boolean,
     onEvent: (Event) -> Unit,
-    onEventNavigate: () -> Unit
+    onEventNavigate: () -> Unit,
+    onEventNavigateList: () -> Unit
 ) {
+    val scrollState = rememberScrollState()
     var ishours = 0
     all.forEach { action ->
         ishours += convertirAEntero(cadena = action.text)
@@ -232,7 +209,7 @@ fun CrudScreen(
                     ) {
                         Column(
                             modifier = Modifier
-                                .weight(1f)
+                                .weight(2f)
                         ) {
                             Text(
                                 "Horas: " + ishours, color = blue, fontSize = 28.sp,
@@ -244,24 +221,13 @@ fun CrudScreen(
                             )
                         }
 
-                        Column(
+                        Row(
                             modifier = Modifier
                                 .weight(1f)
+                                .padding(end = 15.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-
-                            Image(
-                                painter = painterResource(id = R.drawable.car_painting),
-                                contentDescription = "image description",
-                                contentScale = ContentScale.Fit,
-                                modifier = Modifier
-                                    .width(50.dp)
-                                    .height(50.dp)
-                                    .align(Alignment.CenterHorizontally)
-                                    .clickable {
-                                        onEventNavigate()
-                                    }
-
-                            )
 
                         }
                     }
@@ -289,7 +255,9 @@ fun CrudScreen(
                                 modifier = Modifier
                                     .fillMaxHeight()
                                     .width(150.dp)
-                                    .background(Color.White),
+                                    .background(Color.White)
+                                    .verticalScroll(scrollState)
+                                    .padding(16.dp),
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {

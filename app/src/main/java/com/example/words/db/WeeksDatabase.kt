@@ -6,14 +6,16 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.words.db.model.Chairs
+import com.example.words.db.model.Paint
 import com.example.words.db.model.Weeks
 
-@Database(entities = [Weeks::class, Chairs::class] , version = 4, exportSchema = false)
+@Database(entities = [Weeks::class, Chairs::class, Paint::class] , version = 7, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class WeeksDatabase : RoomDatabase(){
 
     abstract fun notesDao(): WeeksDao
     abstract fun chairsDao(): ChairsDao
+    abstract fun paintDao(): PaintDao
 
     companion object {
 

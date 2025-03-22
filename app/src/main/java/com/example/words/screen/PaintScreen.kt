@@ -1,6 +1,7 @@
 package com.example.words.screen
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,10 +12,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -30,17 +34,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.words.Model.ChairsViewModel
+import com.example.words.Model.PaintViewModel
 import com.example.words.navigation.Screen
 import com.example.words.ui.theme.LightBrown
+import com.example.words.ui.theme.blue
 import com.example.words.ui.theme.tickColor
 
 
 @Composable
-fun PaintScreen(navController: NavController) {
+fun PaintScreen(navController: NavController, viewModel: PaintViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -64,16 +72,21 @@ fun PaintScreen(navController: NavController) {
         floatingActionButton = {},
         content = { paddingValues ->
             // Contenido principal de la pantalla
-            maincontentListPainter(paddingValues)
-
+            maincontentListPainter(paddingValues, viewModelPaint = viewModel, onEventNavigate = {
+                navController.navigate(Screen.ListPaint.route)
+            })
         }
     )
 }
 
 
 @Composable
-fun maincontentListPainter(paddingValues: PaddingValues) {
+fun maincontentListPainter(
+    paddingValues: PaddingValues, viewModelPaint: PaintViewModel,
+    onEventNavigate: () -> Unit
+) {
     var isTotal by remember { mutableStateOf(0.0) }
+    var textNote by remember { mutableStateOf("") }
 
     val formData = remember {
         mutableStateMapOf(
@@ -121,7 +134,7 @@ fun maincontentListPainter(paddingValues: PaddingValues) {
             formData.keys.forEach { key ->
                 Log.d("Pintura key ========>", " formData: ${formData[key]}")
                 EditableInfoRow(
-                    label = key ,
+                    label = key,
                     value = formData[key] ?: "",
                     onValueChange = { newValue ->
                         Log.d("Pintura key ========>", " key: ${key}")
@@ -132,23 +145,54 @@ fun maincontentListPainter(paddingValues: PaddingValues) {
                 )
             }
 
+            OutlinedTextField(
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    textColor = blue,
+                    backgroundColor = Color.White,
+                    focusedBorderColor = tickColor
+
+                ),
+                textStyle = TextStyle(
+                    fontSize = 12.sp, // Cambia el tamaño del texto aquí
+                    color = Color.Black // Opcional: Cambia el color del texto
+                ),
+                value = textNote,
+                singleLine = false,
+                onValueChange = { newText ->
+                    Log.d("Note", "newText: $newText")
+                    textNote = newText
+                },
+                modifier = Modifier
+                    .padding(top = 10.dp)
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .background(Color.White),
+
+                label = { Text("Nota") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+            )
+
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 30.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 30.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 BtnCustoms(
                     text = "Guardar",
                     onClick = {
-                        /*viewModel.insertChair(
-                            sillaGrnade = formData["Mecedora Grande"]?.toIntOrNull() ?: 0,
-                            sillaChica = formData["Mecedora Chica"]?.toIntOrNull() ?: 0,
-                            sillaindividual = formData["Silla individual"]?.toIntOrNull() ?: 0,
-                            papelera = formData["Papelera"]?.toIntOrNull() ?: 0,
-                            listonero = formData["Listonero"]?.toIntOrNull() ?: 0,
-                            botanero = formData["Botaneros"]?.toIntOrNull() ?: 0,
-                            sueldo = isTotal.toString()
-                        )*/
-                        //navController.navigate(Screen.ListChairs.route)
+                        viewModelPaint.insertPaint(
+                            sillaGrande = formData["Mecedora Grande $35"]?.toIntOrNull() ?: 0,
+                            sillaChica = formData["Mecedora Chica $25"]?.toIntOrNull() ?: 0,
+                            sillaindividual = formData["Silla individual $33"]?.toIntOrNull() ?: 0,
+                            papelera = formData["Papelera $19"]?.toIntOrNull() ?: 0,
+                            listonero = formData["Listonero $25"]?.toIntOrNull() ?: 0,
+                            botanero = formData["Botaneros $26"]?.toIntOrNull() ?: 0,
+                            arana = formData["Araña $22"]?.toIntOrNull() ?: 0,
+                            total = isTotal.toString(),
+                            nota = textNote
+                        )
+                        onEventNavigate()
                     },
                     colors = ButtonDefaults.buttonColors(
                         disabledContainerColor = Color.White,
@@ -174,6 +218,7 @@ fun maincontentListPainter(paddingValues: PaddingValues) {
                         formData.keys.forEach { key ->
                             formData[key] = "" // Establece cada campo como vacío
                         }
+                        textNote = ""
                         calcularTotal()
                     },
                     colors = ButtonDefaults.buttonColors(
