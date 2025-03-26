@@ -65,51 +65,76 @@ fun HomeScreen(navController: NavController) {
 @Composable
 fun HomeGridScreen(navController: NavController) {
     val foodItems = listOf(
-        FoodItem("Dia de trabajo", R.drawable.ic_launcher_background),
-        FoodItem("Soldadura de sillas", R.drawable.soldador),
+        FoodItem("Dia de trabajo", R.drawable.horas_trabjajo),
+        FoodItem("Soldadura de sillas", R.drawable.welding),
         FoodItem("Pago de tejido", R.drawable.money),
         FoodItem("Pago de pintura", R.drawable.cash_delivery),
-        FoodItem("Lista sillas armados", R.drawable.check_list),
+        FoodItem("Lista horas de trabajo", R.drawable.icon_day_labor),
+        FoodItem("Lista sillas armados", R.drawable.list_chair),
         FoodItem("Lista tejido", R.drawable.completed_task),
-        FoodItem("Lista pintura", R.drawable.list),
+        FoodItem("Lista pintura", R.drawable.spray_gun),
         FoodItem("Medidas de silla", R.drawable.measure_tape),
     )
 
 
     LazyVerticalGrid(
-        contentPadding = PaddingValues(20.dp),
+        contentPadding = PaddingValues(10.dp),
         columns = androidx.compose.foundation.lazy.grid.GridCells.Fixed(1),
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 30.dp),
+            .padding(top = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        item {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = "Imagen redonda",
+                    modifier = Modifier
+                        .size(90.dp) // Hace que la imagen llene todo el espacio
+                )
+            }
+        }
         itemsIndexed(foodItems) { index, item ->
             FoodItemCard(foodItems[index], onEvent = { items ->
                 Log.d("Print Log ========>", " Screeen:: Resul: ${items}")
-                when(items){
-                    "Dia de trabajo"->{
-                        navController.navigate(Screen.WeeksScreen.route)
+                when (items) {
+                    "Dia de trabajo" -> {
+                        navController.navigate(Screen.LaborDayScreen.route)
                     }
-                    "Soldadura de sillas"->{
+
+                    "Soldadura de sillas" -> {
                         navController.navigate(Screen.WorkScreen.route)
                     }
-                    "Pago de tejido"->{
+
+                    "Pago de tejido" -> {
                     }
-                    "Pago de pintura"->{
+
+                    "Pago de pintura" -> {
                         navController.navigate(Screen.PaintScreen.route)
                     }
-                    "Lista sillas armados"->{
+
+                    "Lista sillas armados" -> {
                         navController.navigate(Screen.ListChairs.route)
                     }
-                    "Lista pintura"->{
+
+                    "Lista pintura" -> {
                         navController.navigate(Screen.ListPaint.route)
                     }
-                    "Lista tejido"->{
-                        navController.navigate(Screen.WorkScreen.route)
+
+                    "Lista tejido" -> {
+
                     }
-                    "Medidas de silla"->{
+
+                    "Medidas de silla" -> {
+                    }
+
+                    "Lista horas de trabajo"->{
+                        navController.navigate(Screen.ListLaborDay.route)
                     }
 
                 }
@@ -128,43 +153,45 @@ fun HomeGridScreen(navController: NavController) {
 }
 
 @Composable
-fun FoodItemCard(item: FoodItem, onEvent: (String) -> Unit ) {
+fun FoodItemCard(item: FoodItem, onEvent: (String) -> Unit) {
     Box(
         modifier = Modifier
-            .padding(1.dp) // Ajusta el padding según lo necesites
+            .padding(start = 26.dp, end = 26.dp, bottom = 5.dp) // Ajusta el padding según lo necesites
     ) {
         // Imagen redonda
-        RoundImageWithBorder(imagePainter = painterResource(id = item.imageRes))
-        // Card con las esquinas redondeadas solo del lado izquierdo
-        Card(
+        Box(
             modifier = Modifier
-                .padding(start = 55.dp, end = 20.dp) // Ajusta para que el card quede al lado de la imagen
-                .height(50.dp) // Altura del card
-                .fillMaxWidth().clickable {
-                    onEvent(item.name)
-                }
-                .clip(
-                    RoundedCornerShape(bottomEnd = 20.dp) // Solo redondear el lado izquierdo
-                ),
-            elevation = 8.dp
+                .fillMaxWidth().clickable { onEvent(item.name) }
+                .size(50.dp) // Tamaño de la imagen
+                .clip(CircleShape) // Hace la imagen redonda
+                .border(0.5.dp, Color.Black, CircleShape) // Borde negro de 2 dp
         ) {
-            // Contenido dentro del Card
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(blue)
-                    .padding(start = 20.dp),
+            Row( // Centra horizontalmente los elementos
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Imagen redonda
+                Box(
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(CircleShape)
+                        .border(0.5.dp, Color.Black, CircleShape),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    RoundImageWithBorder(imagePainter = painterResource(id = item.imageRes))
+                }
+
+                // Texto centrado
                 Text(
-                    textAlign = TextAlign.Center, text = item.name, fontSize = 12.sp, color = white,
+                    text = item.name,
+                    fontSize = 20.sp,
+                    color = blue,
                     fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(start = 20.dp ) // Espacio opcional entre imagen y texto
                 )
             }
         }
     }
-
-
 }
 
 
@@ -179,7 +206,9 @@ fun RoundImageWithBorder(imagePainter: Painter) {
         Image(
             painter = imagePainter,
             contentDescription = "Imagen redonda",
-            modifier = Modifier.fillMaxSize().padding(4.dp) // Hace que la imagen llene todo el espacio
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(4.dp) // Hace que la imagen llene todo el espacio
         )
     }
 }

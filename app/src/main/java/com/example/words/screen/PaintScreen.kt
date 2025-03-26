@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
@@ -38,6 +39,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.words.Model.ChairsViewModel
 import com.example.words.Model.PaintViewModel
@@ -48,7 +50,7 @@ import com.example.words.ui.theme.tickColor
 
 
 @Composable
-fun PaintScreen(navController: NavController, viewModel: PaintViewModel) {
+fun PaintScreen(navController: NavController, viewModel: PaintViewModel = hiltViewModel()) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -104,13 +106,13 @@ fun maincontentListPainter(
         isTotal = formData.entries.sumOf { (key, value) ->
             val cantidad = value.toIntOrNull() ?: 0
             when (key.substringBefore(" $")) {
-                "Mecedora Grande" -> cantidad * 33.0
-                "Mecedora Chica" -> cantidad * 33.0
-                "Silla individual" -> cantidad * 28.0
+                "Mecedora Grande" -> cantidad * 35.0
+                "Mecedora Chica" -> cantidad * 25.0
+                "Silla individual" -> cantidad * 33.0
                 "Papelera" -> cantidad * 19.5
-                "Listonero" -> cantidad * 18.0
+                "Listonero" -> cantidad * 25.0
                 "Arañas" -> cantidad * 22.0
-                "Botaneros" -> cantidad * 19.0
+                "Botaneros" -> cantidad * 26.0
                 else -> 0.0
             }
         }
@@ -178,8 +180,8 @@ fun maincontentListPainter(
                     .padding(top = 30.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                BtnCustoms(
-                    text = "Guardar",
+                BtnCornerRow(
+                    title = "Guardar",
                     onClick = {
                         viewModelPaint.insertPaint(
                             sillaGrande = formData["Mecedora Grande $35"]?.toIntOrNull() ?: 0,
@@ -193,27 +195,24 @@ fun maincontentListPainter(
                             nota = textNote
                         )
                         onEventNavigate()
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        disabledContainerColor = Color.White,
-                        contentColor = LightBrown,
-                        containerColor = LightBrown
 
+                    },
+                    style = TextStyle(
+                        color = Color.Black,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 16.sp
                     ),
                     modifier = Modifier
-                        .height(52.dp),
+                        .height(52.dp).width(150.dp),
+                    colorBorder = tickColor,
                     elevation = ButtonDefaults.elevatedButtonElevation(
                         defaultElevation = 0.dp
-                    ),
-                    style = TextStyle(
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
                     )
                 )
 
-                BtnCustoms(
-                    text = "Limpiar",
+
+                BtnCornerRow(
+                    title = "Limpiar",
                     onClick = {
                         formData.keys.forEach { key ->
                             formData[key] = "" // Establece cada campo como vacío
@@ -221,22 +220,19 @@ fun maincontentListPainter(
                         textNote = ""
                         calcularTotal()
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        disabledContainerColor = Color.White,
-                        contentColor = tickColor,
-                        containerColor = tickColor
+                    style = TextStyle(
+                        color = tickColor,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 16.sp
                     ),
                     modifier = Modifier
-                        .height(52.dp),
+                        .height(52.dp).width(150.dp),
+                    colorBorder = tickColor,
                     elevation = ButtonDefaults.elevatedButtonElevation(
                         defaultElevation = 0.dp
-                    ),
-                    style = TextStyle(
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
                     )
                 )
+
             }
         }
     }

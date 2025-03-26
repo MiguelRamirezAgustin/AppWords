@@ -18,7 +18,7 @@ interface PaintDao {
     fun updateChair(paint: Paint)
 
     @Query("SELECt * FROM paint")
-    fun allChair():LiveData<List<Paint>>
+    fun allPaintChair():LiveData<List<Paint>>
 
     @Query("SELECT * FROM paint WHERE id = :id")
     suspend fun findById(id: Int): Paint

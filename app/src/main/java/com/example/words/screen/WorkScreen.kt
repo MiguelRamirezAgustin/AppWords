@@ -1,10 +1,7 @@
 package com.example.words.screen
 
-import android.app.Application
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -14,15 +11,12 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -31,11 +25,8 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,32 +34,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalViewConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.words.Model.ChairsViewModel
-import com.example.words.Model.Event
-import com.example.words.Model.WeeksViewModel
-import com.example.words.Model.WeksViewModelFactory
-import com.example.words.R
-import com.example.words.db.model.Chairs
-import com.example.words.navigation.Screen
-import com.example.words.ui.theme.LightBrown
 import com.example.words.ui.theme.blue
 import com.example.words.ui.theme.tickColor
 
 @Composable
-fun WorkScreen(navController: NavController, viewModel: ChairsViewModel) {
+fun WorkScreen(navController: NavController, viewModel: ChairsViewModel = hiltViewModel()) {
 
     Scaffold(
         topBar = {
@@ -93,7 +72,7 @@ fun WorkScreen(navController: NavController, viewModel: ChairsViewModel) {
         floatingActionButton = {},
         content = { paddingValues ->
             // Contenido principal de la pantalla
-            maincontent(viewModel, paddingValues, navController)
+            maincontent(viewModel, paddingValues)
 
         }
     )
@@ -104,9 +83,8 @@ fun WorkScreen(navController: NavController, viewModel: ChairsViewModel) {
 fun maincontent(
     viewModel: ChairsViewModel,
     paddingValues: PaddingValues,
-    navController: NavController
 ) {
-
+    var showToast by remember { mutableStateOf(false) }
 
     var isTotal by remember { mutableStateOf(0.0) }
     val formData = remember {
@@ -149,64 +127,52 @@ fun maincontent(
                 Row(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.weight(2f)) {
                         Row {
-                            Text("Mecedora G.", color = blue, fontSize = 16.sp)
+                            Text("Mecedora G.", color = blue, fontSize = 18.sp)
                             Text(
-                                " : $33", color = blue, fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
+                                " : $33", color = blue, fontSize = 18.sp,
+                                fontWeight = FontWeight.Medium,
                             )
                         }
                         Row {
-                            Text("Mecedora Ch.", color = blue, fontSize = 16.sp)
+                            Text("Mecedora Ch.", color = blue, fontSize = 18.sp)
                             Text(
-                                " : $33", color = blue, fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
+                                " : $33", color = blue, fontSize = 18.sp,
+                                fontWeight = FontWeight.Medium
                             )
                         }
                         Row {
-                            Text("Sillas Ind.", color = blue, fontSize = 16.sp)
+                            Text("Sillas Ind.", color = blue, fontSize = 18.sp)
                             Text(
-                                " : $28", color = blue, fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
+                                " : $28", color = blue, fontSize = 18.sp,
+                                fontWeight = FontWeight.Medium
                             )
                         }
                     }
                     Column(modifier = Modifier.weight(2f)) {
 
                         Row {
-                            Text("Papelero", color = blue, fontSize = 16.sp)
+                            Text("Papelero", color = blue, fontSize = 18.sp)
                             Text(
-                                " : $19.5", color = blue, fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
+                                " : $19.5", color = blue, fontSize = 18.sp,
+                                fontWeight = FontWeight.Medium
                             )
                         }
                         Row {
-                            Text("Listonero", color = blue, fontSize = 16.sp)
+                            Text("Listonero", color = blue, fontSize = 18.sp)
                             Text(
-                                " : $18", color = blue, fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
+                                " : $18", color = blue, fontSize = 18.sp,
+                                fontWeight = FontWeight.Medium
                             )
 
                         }
                         Row {
-                            Text("Botanero", color = blue, fontSize = 16.sp)
+                            Text("Botanero", color = blue, fontSize = 18.sp)
                             Text(
-                                " : $19", color = blue, fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
+                                " : $19", color = blue, fontSize = 18.sp,
+                                fontWeight = FontWeight.Medium
                             )
 
                         }
-                    }
-                    Column(modifier = Modifier.weight(1f)) {
-                        Image(
-                            painter = painterResource(id = R.drawable.soldador),
-                            contentDescription = "image description",
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier
-                                .width(70.dp)
-                                .height(70.dp)
-                                .align(Alignment.CenterHorizontally)
-
-                        )
                     }
                 }
                 Spacer(modifier = Modifier.height(10.dp))
@@ -225,7 +191,9 @@ fun maincontent(
                 ) {
                     formData.keys.chunked(2).forEach { key ->
                         Row(
-                            modifier = Modifier.fillMaxWidth().padding(bottom = 15.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 15.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             key.forEach { item ->
@@ -257,11 +225,14 @@ fun maincontent(
 
 
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 15.dp),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        BtnCustoms(
-                            text = "Guardar",
+
+                        BtnCornerRow(
+                            title = "Guardar",
                             onClick = {
                                 viewModel.insertChair(
                                     sillaGrnade = formData["Mecedora G"]?.toIntOrNull() ?: 0,
@@ -272,57 +243,50 @@ fun maincontent(
                                     botanero = formData["Botaneros"]?.toIntOrNull() ?: 0,
                                     sueldo = isTotal.toString()
                                 )
-
-                                navController.navigate(Screen.ListChairs.route)
+                                showToast = true
 
                             },
-                            colors = ButtonDefaults.buttonColors(
-                                disabledContainerColor = Color.White,
-                                contentColor = LightBrown,
-                                containerColor = LightBrown
-
+                            style = TextStyle(
+                                color = Color.Black,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 16.sp
                             ),
                             modifier = Modifier
-                                .height(52.dp),
+                                .height(52.dp).width(150.dp),
+                            colorBorder = tickColor,
                             elevation = ButtonDefaults.elevatedButtonElevation(
                                 defaultElevation = 0.dp
-                            ),
-                            style = TextStyle(
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
                             )
                         )
 
-                        BtnCustoms(
-                            text = "Limpiar",
+                        BtnCornerRow(
+                            title = "Limpiar",
                             onClick = {
                                 formData.keys.forEach { key ->
                                     formData[key] = "" // Establece cada campo como vacío
                                 }
                                 calcularTotal()
                             },
-                            colors = ButtonDefaults.buttonColors(
-                                disabledContainerColor = Color.White,
-                                contentColor = tickColor,
-                                containerColor = tickColor
+                            style = TextStyle(
+                                color = tickColor,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 16.sp
                             ),
                             modifier = Modifier
-                                .height(52.dp),
+                                .height(52.dp).width(150.dp),
+                            colorBorder = tickColor,
                             elevation = ButtonDefaults.elevatedButtonElevation(
                                 defaultElevation = 0.dp
-                            ),
-                            style = TextStyle(
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
                             )
                         )
                     }
 
                 }
             }
-
+            if (showToast) {
+                ShowToast("¡Hola desde Compose!")
+                showToast = false // Restablecer para evitar repetir el toast
+            }
         }
 
     }

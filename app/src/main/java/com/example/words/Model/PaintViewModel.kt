@@ -11,57 +11,25 @@ import androidx.lifecycle.viewModelScope
 import com.example.words.Repository.ChairsRepository
 import com.example.words.Repository.PaintRepository
 import com.example.words.core.TextFieldState
-import com.example.words.db.WeeksDatabase
 import com.example.words.db.model.Chairs
 import com.example.words.db.model.Paint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import java.util.Date
+import javax.inject.Inject
+
+@HiltViewModel
+class PaintViewModel @Inject constructor(
+    private val repository: PaintRepository)
+    : ViewModel() {
 
 
-class PaintViewModel(application: Application) : ViewModel() {
+    val all: LiveData<List<Paint>> = repository.allPaint()
 
-    private val repository: PaintRepository
-
-    private val coroutineScope = CoroutineScope(Dispatchers.Main)
-
-    private val _eventFlow = MutableSharedFlow<Event>()
-    val eventFlow = _eventFlow.asSharedFlow()
-
-    private val _text = mutableStateOf(TextFieldState())
-    val text: State<TextFieldState> = _text
-
-    val all: LiveData<List<Paint>>
-    var openDialog by mutableStateOf(false)
-    private var currentId: Int? = null
-
-    init {
-        val db = WeeksDatabase.getInstance(application)
-        val dao = db.paintDao()
-        repository = PaintRepository(dao)
-        all = repository.allPaint()
-    }
-
-    private fun load(id: Int?) {
-        viewModelScope.launch {
-            if (id != null) {
-                repository.findByIdPaint(id).also { paint ->
-                    currentId = paint.id
-                    _text.value = text.value.copy(
-                        text = paint.papelera
-                    )
-                }
-            } else {
-                currentId = null
-                _text.value = text.value.copy(
-                    text = "text"
-                )
-            }
-        }
-    }
 
     fun insertPaint(
         sillaGrande: Int,
@@ -98,56 +66,5 @@ class PaintViewModel(application: Application) : ViewModel() {
         }
     }
 
-    fun onEvent(event: Event) {
-        when (event) {
-            is Event.SetText -> {
-                _text.value = text.value.copy(
-                    text = event.text
-                )
-            }
 
-            is Event.Save -> {
-                if (currentId != null) {
-                    repository.updatePaint(
-                        Paint(
-                            currentId,
-                            text.value.text,
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
-                            Date()
-                        )
-                    )
-                } else {
-                    repository.insertPaint(
-                        Paint(
-                            null, text.value.text,
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
-                            "", "", "", Date()
-                        )
-                    )
-                }
-                openDialog = false
-                coroutineScope.launch(Dispatchers.IO) {
-                    _eventFlow.emit(Event.Save)
-                }
-            }
-
-
-            is Event.Delete -> {
-                event.id?.let { repository.deleteChair(it) }
-            }
-
-            else -> {}
-        }
-    }
 }

@@ -10,55 +10,24 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.words.Repository.ChairsRepository
 import com.example.words.core.TextFieldState
-import com.example.words.db.WeeksDatabase
 import com.example.words.db.model.Chairs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import java.util.Date
+import javax.inject.Inject
 
-class ChairsViewModel(application: Application) : ViewModel() {
-
+@HiltViewModel
+class ChairsViewModel @Inject constructor(
     private val repository: ChairsRepository
+) : ViewModel() {
 
-    private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
-    private val _eventFlow = MutableSharedFlow<Event>()
-    val eventFlow = _eventFlow.asSharedFlow()
 
-    private val _text = mutableStateOf(TextFieldState())
-    val text: State<TextFieldState> = _text
-
-    val all: LiveData<List<Chairs>>
-    var openDialog by mutableStateOf(false)
-    private var currentId: Int? = null
-
-    init {
-        val db = WeeksDatabase.getInstance(application)
-        val dao = db.chairsDao()
-        repository = ChairsRepository(dao)
-        all = repository.allChair()
-    }
-
-    private fun load(id: Int?) {
-        viewModelScope.launch {
-            if (id != null) {
-                repository.findByIdChair(id).also { chairs ->
-                    currentId = chairs.id
-                    _text.value = text.value.copy(
-                        text = chairs.papelera
-                    )
-                }
-            } else {
-                currentId = null
-                _text.value = text.value.copy(
-                    text = "text"
-                )
-            }
-        }
-    }
+    val all: LiveData<List<Chairs>> = repository.allChair()
 
     fun insertChair(
         sillaGrnade: Int,
@@ -91,53 +60,4 @@ class ChairsViewModel(application: Application) : ViewModel() {
         }
     }
 
-    fun onEvent(event: Event) {
-        when (event) {
-            is Event.SetText -> {
-                _text.value = text.value.copy(
-                    text = event.text
-                )
-            }
-
-            is Event.Save -> {
-                if (currentId != null) {
-                    repository.updateChair(
-                        Chairs(
-                            currentId,
-                            text.value.text,
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
-                            "",
-                            Date()
-                        )
-                    )
-                } else {
-                    repository.insertChairs(
-                        Chairs(
-                            null, text.value.text,
-                            "",
-                            "",
-                            "",
-                            "",
-                            "", "", Date()
-                        )
-                    )
-                }
-                openDialog = false
-                coroutineScope.launch(Dispatchers.IO) {
-                    _eventFlow.emit(Event.Save)
-                }
-            }
-
-
-            is Event.Delete -> {
-                event.id?.let { repository.deleteChair(it) }
-            }
-
-            else -> {}
-        }
-    }
 }

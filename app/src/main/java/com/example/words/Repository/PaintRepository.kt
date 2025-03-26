@@ -1,17 +1,14 @@
 package com.example.words.Repository
 
 import androidx.lifecycle.LiveData
-import com.example.words.db.ChairsDao
 import com.example.words.db.PaintDao
-import com.example.words.db.WeeksDao
-import com.example.words.db.model.Chairs
 import com.example.words.db.model.Paint
-import com.example.words.db.model.Weeks
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class PaintRepository (private val paintDao: PaintDao) {
+class PaintRepository @Inject constructor(private val paintDao: PaintDao) {
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
@@ -28,7 +25,7 @@ class PaintRepository (private val paintDao: PaintDao) {
     }
 
     fun allPaint(): LiveData<List<Paint>> {
-        return paintDao.allChair()
+        return paintDao.allPaintChair()
     }
 
     suspend fun findByIdPaint(id: Int): Paint {

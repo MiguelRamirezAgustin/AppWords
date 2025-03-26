@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-
+    id("com.google.dagger.hilt.android")
     kotlin("kapt")
 }
 
@@ -63,7 +63,6 @@ dependencies {
     // Para LiveData
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
-    implementation( "com.google.dagger:hilt-android:2.50")
 
     implementation ("androidx.hilt:hilt-navigation-compose:1.1.0")
     implementation("androidx.compose.material:material:1.4.3")
@@ -72,6 +71,8 @@ dependencies {
 
     // Para SavedStateViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.7")
+    implementation("com.google.dagger:hilt-android:2.50")
+    kapt("com.google.dagger:hilt-compiler:2.50")
 
     // Si utilizas Java 8 o superior, puedes agregar esta dependencia para evitar el uso de 'annotationProcessor'
     implementation("androidx.lifecycle:lifecycle-common-java8:2.8.7")
@@ -85,3 +86,4 @@ dependencies {
 
 
 }
+

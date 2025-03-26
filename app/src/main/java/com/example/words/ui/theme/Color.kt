@@ -22,3 +22,5 @@ val progressBlue =  Color(0xFF003E8B)
 
 val light_tangerine = Color(0xFFFFFAF1)
 val tickColor = Color(0xFF009ACC)
+val isColorBlue = Color(0xFF00558C)
+

@@ -1,5 +1,6 @@
 package com.example.words.screen
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,13 +44,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.words.Model.ChairsViewModel
 import com.example.words.ui.theme.blue
 import com.example.words.ui.theme.progressBlue
 
 @Composable
-fun ListChairs(navController: NavController, viewModel: ChairsViewModel) {
+fun ListChairs(navController: NavController, viewModel: ChairsViewModel = hiltViewModel()) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -83,6 +85,7 @@ fun ListChairs(navController: NavController, viewModel: ChairsViewModel) {
 fun maincontentList(viewModel: ChairsViewModel, paddingValues: PaddingValues) {
     val scrollState = rememberScrollState()
     val chairs by viewModel.all.observeAsState()  // Escuchar cambios en la BD
+    Log.d("Print Log ========>", " Screeen::Resul: ${chairs}")
     Column(modifier = Modifier.padding(bottom = 30.dp, top = 10.dp)
         .verticalScroll(scrollState) ) {
         Spacer(modifier = Modifier.height(10.dp))

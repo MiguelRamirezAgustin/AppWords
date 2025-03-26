@@ -3,4 +3,24 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.compose) apply false
+
+}
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.android.tools.build:gradle:7.4.0")  // Asegúrate de tener la versión correcta de AGP
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0")  // Versión de Kotlin
+        classpath("com.google.dagger:hilt-android-gradle-plugin:2.50")  // Para Hilt
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
 }

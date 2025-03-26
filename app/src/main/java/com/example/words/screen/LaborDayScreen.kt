@@ -1,11 +1,9 @@
 package com.example.words.screen
 
 import android.annotation.SuppressLint
-import android.app.Application
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -25,14 +23,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -46,126 +46,156 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalViewConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.words.Model.Event
-import com.example.words.Model.WeeksViewModel
-import com.example.words.Model.WeksViewModelFactory
-import com.example.words.R
-import com.example.words.db.model.Weeks
-import com.example.words.navigation.Screen
-import com.example.words.ui.theme.WordsTheme
+import com.example.words.Model.LaborDayViewModel
+import com.example.words.db.model.LaborDay
+import com.example.words.ui.theme.LightBrown
 import com.example.words.ui.theme.blue
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import com.example.words.ui.theme.tickColor
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun WeeksScreen(navController: NavController) {
-    WordsTheme() {
-        Crud(modifier = Modifier.background(Color.White), navController)
-    }
+fun LaborDayScreen(viewModel: LaborDayViewModel = hiltViewModel(), navController: NavController) {
+    CrudScreenSetup(viewModel, navController)
 }
 
 
-@Composable
-fun Crud(modifier: Modifier, navController: NavController) {
-    val owner = LocalViewModelStoreOwner.current
-    LocalViewConfiguration
-    owner?.let {
-        val viewModel: WeeksViewModel = viewModel(
-            it,
-            "NoteViewModel",
-            WeksViewModelFactory(
-                LocalContext.current.applicationContext
-                        as Application
-            )
-        )
-
-        CrudScreenSetup(viewModel, navController)
-    }
-}
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun CrudScreenSetup(viewModel: WeeksViewModel, navController: NavController) {
-
-    val all by viewModel.all.observeAsState(listOf())
-
+fun CrudScreenSetup(viewModel: LaborDayViewModel, navController: NavController) {
+    var texts by remember { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
 
-    LaunchedEffect(snackbarHostState) {
-        viewModel.eventFlow.collectLatest { event ->
-            when (event) {
-                is Event.Save -> {
-                    // show snackbar as a suspend function
-                    scope.launch {
-                        snackbarHostState.showSnackbar(
-                            "Nuevo dia"
-                        )
-                    }
-                }
-
-                else -> Unit
-            }
-        }
-    }
 
     Scaffold(
         topBar = { },
-        floatingActionButton = {
-            Column(
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                FloatingActionButton(
-                    modifier = Modifier.background(Color.White),
-                    containerColor = Color.White,
-                    onClick = {
-                        viewModel.onEvent(Event.Load(null))
-                    }) {
-                    Icon(
-                        tint = Color.Unspecified,
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "New note"
-                    )
-                }
-
-
-            }
-
-
-        },
         floatingActionButtonPosition = FabPosition.End,
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) {
-        CrudScreen(
-            all = all,
-            openDialog = viewModel.openDialog,
-            onEvent = { viewModel.onEvent(it) },
-            onEventNavigate = { navController.navigate(Screen.PaintScreen.route) },
-            onEventNavigateList = { navController.navigate(Screen.ListPaint.route) }
-        )
+        Column(
+            modifier = Modifier
+                .background(Color.White)
+        ) {
+            Column(
+                Modifier
+                    .padding(start = 24.dp, top = 29.dp, end = 24.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "Agregar nuevo dia",
+                    fontSize = 30.sp,
+                    color = blue,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(top = 20.dp, bottom = 20.dp)
+                )
+
+                Row(modifier = Modifier.padding(top = 20.dp, bottom = 20.dp)) {
+                    androidx.compose.material.Text("Hora", color = blue, fontSize = 18.sp)
+                    androidx.compose.material.Text(
+                        " : $28", color = blue, fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
+                OutlinedTextField(
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        textColor = blue,
+                        backgroundColor = Color.White,
+                        focusedBorderColor = tickColor
+
+                    ),
+                    value = texts,
+                    onValueChange = {
+                        // Filtrar solo los caracteres numéricos y limitar la longitud
+                        val filteredText = it.filter { char -> char.isDigit() }.take(2)
+                        texts = filteredText
+                        Log.d("Print Log ========>", " Screeen::${it} ")
+                        if (!it.isEmpty()) {
+                            viewModel.insertLaborDay(it)
+                        }
+
+                    },
+                    label = { Text("Horas") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
+
+
+            }
+            Spacer(modifier = Modifier.padding(bottom = 30.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        bottom = 24.dp,
+                        start = 24.dp,
+                        end = 24.dp,
+                        top = 10.dp
+                    ), horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+
+                BtnCornerRow(
+                    title = "Guardar",
+                    onClick = {
+                        navController.popBackStack()
+                    },
+                    style = TextStyle(
+                        color = tickColor,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 16.sp
+                    ),
+                    modifier = Modifier
+                        .height(52.dp)
+                        .width(150.dp),
+                    colorBorder = tickColor,
+                    elevation = ButtonDefaults.elevatedButtonElevation(
+                        defaultElevation = 0.dp
+                    )
+                )
+                BtnCornerRow(
+                    title = "Cancelar",
+                    onClick = {
+                        navController.popBackStack()
+                    },
+                    style = TextStyle(
+                        color = tickColor,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 16.sp
+                    ),
+                    modifier = Modifier
+                        .height(52.dp)
+                        .width(150.dp),
+                    colorBorder = tickColor,
+                    elevation = ButtonDefaults.elevatedButtonElevation(
+                        defaultElevation = 0.dp
+                    )
+                )
+
+            }
+        }
     }
 
 
@@ -174,7 +204,7 @@ fun CrudScreenSetup(viewModel: WeeksViewModel, navController: NavController) {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CrudScreen(
-    all: List<Weeks>,
+    all: List<LaborDay>,
     openDialog: Boolean,
     onEvent: (Event) -> Unit,
     onEventNavigate: () -> Unit,

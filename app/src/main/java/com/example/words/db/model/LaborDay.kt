@@ -5,8 +5,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.Date
 
-@Entity(tableName = "notes")
-data class Weeks (
+@Entity(tableName = "laborDay")
+data class LaborDay (
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")

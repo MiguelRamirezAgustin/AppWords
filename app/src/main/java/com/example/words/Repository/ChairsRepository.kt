@@ -2,15 +2,13 @@ package com.example.words.Repository
 
 import androidx.lifecycle.LiveData
 import com.example.words.db.ChairsDao
-import com.example.words.db.WeeksDao
 import com.example.words.db.model.Chairs
-import com.example.words.db.model.Weeks
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ChairsRepository (private val chairsDao: ChairsDao) {
-
+class ChairsRepository @Inject constructor(private val chairsDao: ChairsDao) {
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     fun insertChairs(chairs: Chairs) {

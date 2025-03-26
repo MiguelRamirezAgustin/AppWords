@@ -1,5 +1,6 @@
 package com.example.words.screen
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.words.Model.ChairsViewModel
 import com.example.words.Model.PaintViewModel
@@ -54,7 +56,7 @@ import com.example.words.ui.theme.LightBrown
 import com.example.words.ui.theme.blue
 
 @Composable
-fun ListPaint(navController: NavController, viewModel: PaintViewModel) {
+fun ListPaint(navController: NavController, viewModel: PaintViewModel = hiltViewModel()) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -86,11 +88,12 @@ fun ListPaint(navController: NavController, viewModel: PaintViewModel) {
 
 @Composable
 fun maincontentListPaint(viewModel: PaintViewModel, paddingValues: PaddingValues) {
-    val chairs by viewModel.all.observeAsState()  // Escuchar cambios en la BD
+    val paintChair by viewModel.all.observeAsState()  // Escuchar cambios en la BD
     val scrollState = rememberScrollState()
+    Log.d("Print Log ========>", " chair::Resul: ${paintChair}")
     Column(modifier = Modifier.padding(bottom = 30.dp, top = 10.dp)
         .verticalScroll(scrollState),) {
-        chairs?.forEach { it ->
+        paintChair?.forEach { it ->
             Card(
                 modifier = Modifier
                     .background(Color.White)
