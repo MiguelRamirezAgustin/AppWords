@@ -25,6 +25,8 @@ data class Chairs(
     var botanero: String,
     @ColumnInfo(name = "sueldo")
     var sueldo :String,
+    @ColumnInfo(name = "nota")
+    var nota :String,
     @ColumnInfo(name = "update")
     var update: Date?
 )

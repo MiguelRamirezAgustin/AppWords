@@ -85,7 +85,7 @@ fun maincontent(
     paddingValues: PaddingValues,
 ) {
     var showToast by remember { mutableStateOf(false) }
-
+    var texts by remember { mutableStateOf("") }
     var isTotal by remember { mutableStateOf(0.0) }
     val formData = remember {
         mutableStateMapOf(
@@ -223,6 +223,35 @@ fun maincontent(
                         Spacer(modifier = Modifier.height(5.dp))
                     }
 
+                    Column {
+                        OutlinedTextField(
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                textColor = blue,
+                                backgroundColor = Color.White,
+                                focusedBorderColor = tickColor
+
+                            ),
+                            value = texts,
+                            onValueChange = {
+                                Log.d("Print Log ========>", " Screeen::${it}. texts::${texts} ")
+                                if (!it.isEmpty()) {
+                                    texts = it
+                                }
+
+                            },
+                            modifier = Modifier
+                                .padding( end = 10.dp, start = 10.dp, bottom = 10.dp)
+                                .fillMaxWidth()
+                                .height(65.dp)
+                                .background(Color.White),
+                            textStyle = TextStyle(
+                                fontSize = 24.sp, // Cambia el tamaño del texto aquí
+                                color = Color.Black // Opcional: Cambia el color del texto
+                            ),
+                            label = { Text( text ="Nota") },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+                        )
+                    }
 
                     Row(
                         modifier = Modifier
@@ -241,9 +270,11 @@ fun maincontent(
                                     papelera = formData["Papelera"]?.toIntOrNull() ?: 0,
                                     listonero = formData["Listonero"]?.toIntOrNull() ?: 0,
                                     botanero = formData["Botaneros"]?.toIntOrNull() ?: 0,
-                                    sueldo = isTotal.toString()
+                                    sueldo = isTotal.toString(),
+                                    nota = texts
                                 )
                                 showToast = true
+                                texts = ""
 
                             },
                             style = TextStyle(
@@ -284,7 +315,6 @@ fun maincontent(
                 }
             }
             if (showToast) {
-                ShowToast("¡Hola desde Compose!")
                 showToast = false // Restablecer para evitar repetir el toast
             }
         }

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.words.db.AppDatabase
 import com.example.words.db.ChairsDao
+import com.example.words.db.ChairsTejidoDao
 import com.example.words.db.PaintDao
 import com.example.words.db.LaborDayDao
 import dagger.Module
@@ -42,4 +43,11 @@ object DatabaseModule {
     fun provideWeeksDao(database: AppDatabase): LaborDayDao {
         return database.laborDayDao()
     }
+
+    @Provides
+    fun provideChairTejidoDao(database: AppDatabase): ChairsTejidoDao {
+        return database.chairTejido()
+    }
+
+
 }

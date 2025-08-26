@@ -109,7 +109,7 @@ fun maincontentListPainter(
                 "Mecedora Grande" -> cantidad * 35.0
                 "Mecedora Chica" -> cantidad * 25.0
                 "Silla individual" -> cantidad * 33.0
-                "Papelera" -> cantidad * 19.5
+                "Papelera" -> cantidad * 19.0
                 "Listonero" -> cantidad * 25.0
                 "Arañas" -> cantidad * 22.0
                 "Botaneros" -> cantidad * 26.0
@@ -155,7 +155,7 @@ fun maincontentListPainter(
 
                 ),
                 textStyle = TextStyle(
-                    fontSize = 12.sp, // Cambia el tamaño del texto aquí
+                    fontSize = 24.sp, // Cambia el tamaño del texto aquí
                     color = Color.Black // Opcional: Cambia el color del texto
                 ),
                 value = textNote,
@@ -167,7 +167,7 @@ fun maincontentListPainter(
                 modifier = Modifier
                     .padding(top = 10.dp)
                     .fillMaxWidth()
-                    .height(60.dp)
+                    .height(90.dp)
                     .background(Color.White),
 
                 label = { Text("Nota") },

@@ -37,6 +37,7 @@ class ChairsViewModel @Inject constructor(
         listonero: Int,
         botanero: Int,
         sueldo: String,
+        nota:String
     ) {
         viewModelScope.launch {
             val newChair = Chairs(
@@ -48,6 +49,7 @@ class ChairsViewModel @Inject constructor(
                 listonero.toString(),
                 botanero.toString(),
                 sueldo = sueldo,
+                nota = nota,
                 Date()
             )
             repository.insertChairs(newChair)

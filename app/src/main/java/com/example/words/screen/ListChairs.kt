@@ -90,18 +90,20 @@ fun maincontentList(viewModel: ChairsViewModel, paddingValues: PaddingValues) {
         .verticalScroll(scrollState) ) {
         Spacer(modifier = Modifier.height(10.dp))
         chairs?.forEach { it ->
+            Log.d("Print Log ========>", " Screeen: ${ it.update.toString()}")
+
             Card(
                 modifier = Modifier
                     .background(Color.White)
-                    .padding(end = 15.dp, start = 15.dp, top = 15.dp, bottom = 5.dp)
+                    .padding(end = 15.dp, start = 15.dp, top = 10.dp, bottom = 5.dp)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
                     ) {}
-                    .height(100.dp),
+                    .height(145.dp),
                 contentColor = Color.White,
                 border = BorderStroke(1.dp, progressBlue),
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(10.dp),
                 elevation = 9.dp,
                 backgroundColor = Color.White
             ) {
@@ -110,7 +112,7 @@ fun maincontentList(viewModel: ChairsViewModel, paddingValues: PaddingValues) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 10.dp, top = 10.dp, end = 10.dp)
+                            .padding(start = 10.dp, top = 5.dp, end = 10.dp)
                     ) {
                         Column(
                             modifier = Modifier
@@ -199,6 +201,7 @@ fun maincontentList(viewModel: ChairsViewModel, paddingValues: PaddingValues) {
 
                         }
 
+
                         Column(
                             modifier = Modifier
                                 .weight(1f)
@@ -221,7 +224,7 @@ fun maincontentList(viewModel: ChairsViewModel, paddingValues: PaddingValues) {
                                 modifier = Modifier.padding(
                                     top = 8.dp,
                                 ),
-                                text = FormatearFechaDay(it.update.toString()).toString(),
+                                text = parseCustomDate(it.update.toString()),
                                 color = blue,
                                 fontSize = 15.sp,
                                 lineHeight = 24.sp,
@@ -268,7 +271,20 @@ fun maincontentList(viewModel: ChairsViewModel, paddingValues: PaddingValues) {
                             }
                         }
                     }
-
+                    Column( modifier = Modifier
+                        .fillMaxWidth().padding(start = 10.dp, end = 10.dp)
+                        .background(Color.White),
+                        verticalArrangement = Arrangement.Center) {
+                        androidx.compose.material3.Text(
+                            modifier = Modifier,
+                            textAlign = TextAlign.Start,
+                            text = "Nota: " + it.nota,
+                            color = blue,
+                            fontSize = 20.sp,
+                            lineHeight = 23.sp,
+                            style = TextStyle.Default,
+                        )
+                    }
 
                 }
             }

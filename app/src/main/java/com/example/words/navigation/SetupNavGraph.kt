@@ -6,9 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.words.screen.ChairsTejidoScreen
 import com.example.words.screen.HomeScreen
 import com.example.words.screen.LaborDayScreen
 import com.example.words.screen.ListChairs
+import com.example.words.screen.ListChairsTedijo
 import com.example.words.screen.ListLaborDay
 import com.example.words.screen.ListPaint
 import com.example.words.screen.PaintScreen
@@ -61,6 +63,19 @@ fun SetupNavGraph(navController: NavHostController) {
                 navController = navController
             )
         }
+
+        composable(route = Screen.ChairsTejidoScreen.route) {
+            ChairsTejidoScreen(
+                navController = navController
+            )
+        }
+
+        composable(route = Screen.ListChairsTedijo.route) {
+            ListChairsTedijo(
+                navController = navController
+            )
+        }
+
 
 
 

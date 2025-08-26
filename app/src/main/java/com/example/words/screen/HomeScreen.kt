@@ -2,58 +2,37 @@ package com.example.words.screen
 
 import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.example.words.R
 import com.example.words.ui.theme.blue
-import com.example.words.ui.theme.progressBlue
-import java.util.Collections.copy
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.text.TextStyle
 import androidx.navigation.NavController
-import com.example.words.Model.Event
 import com.example.words.navigation.Screen
-import com.example.words.ui.theme.tickColor
-import com.example.words.ui.theme.white
 
 
 @Composable
@@ -69,7 +48,6 @@ fun HomeGridScreen(navController: NavController) {
         FoodItem("Soldadura de sillas", R.drawable.welding),
         FoodItem("Pago de tejido", R.drawable.money),
         FoodItem("Pago de pintura", R.drawable.cash_delivery),
-        FoodItem("Lista horas de trabajo", R.drawable.icon_day_labor),
         FoodItem("Lista sillas armados", R.drawable.list_chair),
         FoodItem("Lista tejido", R.drawable.completed_task),
         FoodItem("Lista pintura", R.drawable.spray_gun),
@@ -112,6 +90,7 @@ fun HomeGridScreen(navController: NavController) {
                     }
 
                     "Pago de tejido" -> {
+                        navController.navigate(Screen.ChairsTejidoScreen.route)
                     }
 
                     "Pago de pintura" -> {
@@ -127,13 +106,13 @@ fun HomeGridScreen(navController: NavController) {
                     }
 
                     "Lista tejido" -> {
-
+                        navController.navigate(Screen.ListChairsTedijo.route)
                     }
 
                     "Medidas de silla" -> {
                     }
 
-                    "Lista horas de trabajo"->{
+                    "Lista horas de trabajo" -> {
                         navController.navigate(Screen.ListLaborDay.route)
                     }
 
@@ -156,12 +135,17 @@ fun HomeGridScreen(navController: NavController) {
 fun FoodItemCard(item: FoodItem, onEvent: (String) -> Unit) {
     Box(
         modifier = Modifier
-            .padding(start = 26.dp, end = 26.dp, bottom = 5.dp) // Ajusta el padding según lo necesites
+            .padding(
+                start = 26.dp,
+                end = 26.dp,
+                bottom = 5.dp
+            ) // Ajusta el padding según lo necesites
     ) {
         // Imagen redonda
         Box(
             modifier = Modifier
-                .fillMaxWidth().clickable { onEvent(item.name) }
+                .fillMaxWidth()
+                .clickable { onEvent(item.name) }
                 .size(50.dp) // Tamaño de la imagen
                 .clip(CircleShape) // Hace la imagen redonda
                 .border(0.5.dp, Color.Black, CircleShape) // Borde negro de 2 dp
@@ -187,7 +171,7 @@ fun FoodItemCard(item: FoodItem, onEvent: (String) -> Unit) {
                     color = blue,
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(start = 20.dp ) // Espacio opcional entre imagen y texto
+                    modifier = Modifier.padding(start = 20.dp) // Espacio opcional entre imagen y texto
                 )
             }
         }

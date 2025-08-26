@@ -1,78 +1,69 @@
 package com.example.words.screen
 
-import android.annotation.SuppressLint
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Card
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavController
-import com.example.words.Model.Event
 import com.example.words.Model.LaborDayViewModel
-import com.example.words.db.model.LaborDay
 import com.example.words.ui.theme.LightBrown
-import com.example.words.ui.theme.blue
-import com.example.words.ui.theme.tickColor
 import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import android.app.TimePickerDialog
+import android.content.Context
+import android.content.res.ColorStateList
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import com.example.words.R
+import com.example.words.ui.theme.blue
+import com.example.words.ui.theme.isColorBlue
+import java.time.Duration
+import java.time.LocalTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -81,299 +72,300 @@ fun LaborDayScreen(viewModel: LaborDayViewModel = hiltViewModel(), navController
 }
 
 
-
-
 @RequiresApi(Build.VERSION_CODES.O)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CrudScreenSetup(viewModel: LaborDayViewModel, navController: NavController) {
-    var texts by remember { mutableStateOf("") }
-    val snackbarHostState = remember { SnackbarHostState() }
 
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var showSheet by remember { mutableStateOf(false) }
+    val horarios = remember { mutableStateListOf<Pair<LocalTime, LocalTime>>() }
+    var entrada by remember { mutableStateOf(LocalTime.of(9, 0)) }
+    var salida by remember { mutableStateOf(LocalTime.of(17, 0)) }
+    val context = LocalContext.current
+    val formatoHora = DateTimeFormatter.ofPattern("hh:mm a", Locale("es", "MX"))
 
     Scaffold(
-        topBar = { },
+        topBar = {
+            TopAppBar(
+                title = {
+                    androidx.compose.material.Text(
+                        text = "Horas de trabajo",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                },
+                navigationIcon = {
+                    androidx.compose.material.IconButton(onClick = { navController.popBackStack() }) {
+                        androidx.compose.material.Icon(Icons.Filled.ArrowBack, "backIcon")
+                    }
+                },
+                backgroundColor = Color.White,
+                contentColor = Color.Black,
+                modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars)
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { showSheet = true }) {
+                Icon(Icons.Default.Add, contentDescription = "Agregar horario")
+            }
+        },
         floatingActionButtonPosition = FabPosition.End,
-        snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) {
+    ) { padding ->
+
         Column(
             modifier = Modifier
+                .fillMaxSize()
                 .background(Color.White)
+                .padding(padding)
+                .padding(10.dp)
         ) {
-            Column(
-                Modifier
-                    .padding(start = 24.dp, top = 29.dp, end = 24.dp)
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    text = "Agregar nuevo dia",
-                    fontSize = 30.sp,
-                    color = blue,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(top = 20.dp, bottom = 20.dp)
-                )
+            Text(
+                modifier = Modifier.padding(vertical = 15.dp, horizontal = 15.dp),
+                text = "Lista de horarios",
+                fontWeight = FontWeight.Bold,
+                fontSize = 22.sp
+            )
 
-                Row(modifier = Modifier.padding(top = 20.dp, bottom = 20.dp)) {
-                    androidx.compose.material.Text("Hora", color = blue, fontSize = 18.sp)
-                    androidx.compose.material.Text(
-                        " : $28", color = blue, fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-
-                OutlinedTextField(
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        textColor = blue,
-                        backgroundColor = Color.White,
-                        focusedBorderColor = tickColor
-
-                    ),
-                    value = texts,
-                    onValueChange = {
-                        // Filtrar solo los caracteres numéricos y limitar la longitud
-                        val filteredText = it.filter { char -> char.isDigit() }.take(2)
-                        texts = filteredText
-                        Log.d("Print Log ========>", " Screeen::${it} ")
-                        if (!it.isEmpty()) {
-                            viewModel.insertLaborDay(it)
-                        }
-
-                    },
-                    label = { Text("Horas") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                )
-
-
+            val totalDuracion = horarios.fold(Duration.ZERO) { acc, (entrada, salida) ->
+                acc.plus(Duration.between(entrada, salida))
             }
-            Spacer(modifier = Modifier.padding(bottom = 30.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        bottom = 24.dp,
-                        start = 24.dp,
-                        end = 24.dp,
-                        top = 10.dp
-                    ), horizontalArrangement = Arrangement.SpaceBetween
+            val totalHoras = totalDuracion.toHours()
+            val totalMinutos = totalDuracion.toMinutes() % 60
+
+            Text(
+                text = "Total acumulado: ${totalHoras} h ${totalMinutos} m",
+                style = MaterialTheme.typography.titleMedium,
+                fontSize = 18.sp,
+                color = blue,
+                modifier = Modifier.padding(vertical = 10.dp).align(Alignment.CenterHorizontally)
+            )
+
+
+            horarios.forEachIndexed { index, (entrada, salida) ->
+                val duracion = Duration.between(entrada, salida)
+                val horas = duracion.toHours()
+                val minutos = duracion.toMinutes() % 60
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 15.dp, start = 10.dp)
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .height(56.dp)
+                    ) {
+                        Text(
+                            text = "Ent: ${entrada.format(formatoHora)} - Sal: ${
+                                salida.format(
+                                    formatoHora
+                                )
+                            }",
+                            color = Color.Black,
+                            fontSize = 22.sp,
+                            modifier = Modifier.padding(),
+                        )
+
+                        IconButton(modifier = Modifier.padding(start = 18.dp),
+                            onClick = { horarios.removeAt(index) }) {
+                            Image(
+                                painter = painterResource(id = R.drawable.alarm),
+                                modifier = Modifier,
+                                contentDescription = "Eliminar"
+                            )
+                        }
+                    }
+
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            fontWeight = FontWeight.Bold,
+                            text = "Total: ${horas} h ${minutos} m",
+                            fontSize = 22.sp,
+                            color = Color.Black,
+                            modifier = Modifier.padding(),
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+        }
+
+        if (showSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showSheet = false },
+                sheetState = sheetState
             ) {
-
-                BtnCornerRow(
-                    title = "Guardar",
-                    onClick = {
-                        navController.popBackStack()
-                    },
-                    style = TextStyle(
-                        color = tickColor,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 16.sp
-                    ),
+                Column(
                     modifier = Modifier
-                        .height(52.dp)
-                        .width(150.dp),
-                    colorBorder = tickColor,
-                    elevation = ButtonDefaults.elevatedButtonElevation(
-                        defaultElevation = 0.dp
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        "Selecciona tus horarios",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        color = Color.Blue
                     )
-                )
-                BtnCornerRow(
-                    title = "Cancelar",
-                    onClick = {
-                        navController.popBackStack()
-                    },
-                    style = TextStyle(
-                        color = tickColor,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 16.sp
-                    ),
-                    modifier = Modifier
-                        .height(52.dp)
-                        .width(150.dp),
-                    colorBorder = tickColor,
-                    elevation = ButtonDefaults.elevatedButtonElevation(
-                        defaultElevation = 0.dp
-                    )
-                )
 
+                    Spacer(Modifier.height(16.dp))
+                    IsBtn(isText = "Entrada: ${entrada.format(formatoHora)}", onClick = {
+                        showTimePicker(
+                            context = context,
+                            initial = entrada,
+                            onTimeSelected = { entrada = it }
+                        )
+                    })
+
+                    Spacer(Modifier.height(12.dp))
+                    IsBtn(isText = "Salida: ${salida.format(formatoHora)}", onClick = {
+                        showTimePicker(
+                            context = context,
+                            initial = salida,
+                            onTimeSelected = { salida = it }
+                        )
+                    })
+
+                    Spacer(Modifier.height(24.dp))
+
+                    IsBtn(isText = "Aceptar", onClick = {
+                        horarios.add(entrada to salida)
+                        showSheet = false
+                    })
+                }
             }
         }
     }
-
-
 }
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CrudScreen(
-    all: List<LaborDay>,
-    openDialog: Boolean,
-    onEvent: (Event) -> Unit,
-    onEventNavigate: () -> Unit,
-    onEventNavigateList: () -> Unit
+fun HorarioItem(
+    entrada: LocalTime,
+    salida: LocalTime,
+    onTimeChange: (LocalTime, LocalTime) -> Unit,
+    onDelete: () -> Unit
 ) {
-    val scrollState = rememberScrollState()
-    var ishours = 0
-    all.forEach { action ->
-        ishours += convertirAEntero(cadena = action.text)
-    }
+    var showEntradaPicker by remember { mutableStateOf(false) }
+    var showSalidaPicker by remember { mutableStateOf(false) }
+    val formatoHora = DateTimeFormatter.ofPattern("hh:mm a", Locale("es", "MX"))
 
-    Box(
+    Row(
         modifier = Modifier
-            .padding(top = 40.dp)
-            .fillMaxSize()
-            .background(Color.White),
-        contentAlignment = Alignment.Center
+            .fillMaxWidth()
+            .padding(bottom = 10.dp, top = 10.dp)
     ) {
+        Row(modifier = Modifier.weight(2f)) {
 
-        Box(
-            modifier = Modifier
-                .padding()
-                .fillMaxSize()
-                .height(40.dp)
+            Text(
+                modifier = Modifier,
+                fontSize = 20.sp,
+                text = "Entrada: ${entrada.format(formatoHora)}"
+            )
+
+            BtnCustoms(
+                text = "Entrada",
+                onClick = {
+                    showEntradaPicker = true
+                },
+                colors = ButtonDefaults.buttonColors(
+                    disabledContainerColor = Color.White,
+                    contentColor = LightBrown,
+                    containerColor = LightBrown
+
+                ),
+                modifier = Modifier
+                    .height(50.dp)
+                    .padding(top = 10.dp),
+                elevation = ButtonDefaults.elevatedButtonElevation(
+                    defaultElevation = 0.dp
+                ),
+                style = TextStyle(
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            Text(
+                modifier = Modifier,
+                fontSize = 20.sp,
+                text = "Salida:  ${salida.format(formatoHora)}"
+            )
+
+            BtnCustoms(
+                text = "Salida",
+                onClick = {
+                    showSalidaPicker = true
+                },
+                colors = ButtonDefaults.buttonColors(
+                    disabledContainerColor = Color.White,
+                    contentColor = LightBrown,
+                    containerColor = LightBrown
+
+                ),
+                modifier = Modifier
+                    .height(50.dp)
+                    .padding(top = 10.dp),
+                elevation = ButtonDefaults.elevatedButtonElevation(
+                    defaultElevation = 0.dp
+                ),
+                style = TextStyle(
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+            )
+        }
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            LazyColumn {
 
-                item {
-                    Row(
-                        Modifier
-                            .padding(start = 25.dp, top = 30.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .weight(2f)
-                        ) {
-                            Text(
-                                "Horas: " + ishours, color = blue, fontSize = 28.sp,
-                                fontWeight = FontWeight.Normal
-                            )
-                            Text(
-                                "Pago: $ " + ishours * 28, color = blue, fontSize = 25.sp,
-                                fontWeight = FontWeight.Normal
-                            )
-                        }
-
-                        Row(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(end = 15.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-
-                        }
-                    }
-                }
-
-                items(all) {
-                    Card(
-                        modifier = Modifier
-                            .padding(end = 24.dp, start = 24.dp, top = 15.dp, bottom = 6.dp)
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = null,
-                            ) {
-
-                            }
-                            .height(90.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        elevation = 9.dp,
-                        backgroundColor = Color.LightGray
-                    ) {
-
-                        Log.d("Date--->", "${it.update.toString()}")
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .width(150.dp)
-                                    .background(Color.White)
-                                    .verticalScroll(scrollState)
-                                    .padding(16.dp),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    modifier = Modifier.padding(
-                                        start = 8.dp,
-                                        top = 5.dp,
-                                        end = 15.dp
-                                    ),
-                                    textAlign = TextAlign.Start,
-                                    text = FormatearFecha(it.update.toString()),
-                                    color = blue,
-                                    fontSize = 16.sp,
-                                    lineHeight = 23.sp,
-                                    style = TextStyle.Default,
-                                )
-                            }
-
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(Color.White)
-                            ) {
-                                Text(
-                                    modifier = Modifier.padding(
-                                        start = 8.dp,
-                                        top = 15.dp,
-                                        bottom = 15.dp
-                                    ),
-                                    textAlign = TextAlign.Start,
-                                    text = "Horas: " + it.text,
-                                    color = blue,
-                                    fontSize = 24.sp,
-                                    lineHeight = 24.sp,
-                                    style = TextStyle.Default,
-                                )
-
-                                Row(
-                                    Modifier
-                                        .padding(bottom = 10.dp, start = 5.dp)
-                                        .fillMaxWidth()
-                                        .background(Color.White),
-                                    horizontalArrangement = Arrangement.End,
-                                    verticalAlignment = Alignment.Bottom,
-                                ) {
-                                    IconButton(
-                                        modifier = Modifier
-                                            .size(50.dp),
-                                        colors = IconButtonColors(
-                                            containerColor = Color.Transparent,
-                                            contentColor = Color.Red,
-                                            disabledContentColor = Color.White,
-                                            disabledContainerColor = Color.Red
-                                        ),
-                                        onClick = {
-                                            onEvent(Event.Delete(it.id))
-                                        }) {
-                                        Icon(Icons.Rounded.Delete, contentDescription = null)
-                                    }
-                                    IconButton(modifier = Modifier
-                                        .size(50.dp),
-                                        colors = IconButtonColors(
-                                            containerColor = Color.Transparent,
-                                            contentColor = Color.Blue,
-                                            disabledContentColor = Color.White,
-                                            disabledContainerColor = Color.Red
-                                        ), onClick = {
-                                            onEvent(Event.Load(it.id))
-                                        }) {
-                                        Icon(Icons.Rounded.Edit, contentDescription = null)
-                                    }
-                                }
-
-                            }
-                        }
-                    }
-
-                }
-
+            IconButton(
+                onClick = onDelete
+            ) {
+                Icon(
+                    modifier = Modifier.size(60.dp),
+                    painter = painterResource(id = R.drawable.alarm),
+                    contentDescription = "Agregar",
+                    tint = Color.Unspecified
+                )
             }
         }
-
-
     }
 
-    AlerDialogPopupAdd(openDialog = openDialog, onEvent = onEvent)
+    // Pickers
+    /* if (showEntradaPicker) {
+         TimePickerComposable(
+             initialHour = entrada.hour,
+             initialMinute = entrada.minute,
+             onTimeSelected = { h, m ->
+                 onTimeChange(LocalTime.of(h, m), salida)
+                 showEntradaPicker = false
+             },
+             onDismiss = { showEntradaPicker = false }
+         )
+     }
+
+     if (showSalidaPicker) {
+         TimePickerComposable(
+             initialHour = salida.hour,
+             initialMinute = salida.minute,
+             onTimeSelected = { h, m ->
+                 onTimeChange(entrada, LocalTime.of(h, m))
+                 showSalidaPicker = false
+             },
+             onDismiss = { showSalidaPicker = false }
+         )
+     }*/
 }
 
 
@@ -384,7 +376,7 @@ fun FormatearFecha(fechaOriginal: String): String {
     val formatoEntrada = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH)
     // Definir el patrón del formato de la fecha deseada
     val formatoSalida =
-        DateTimeFormatter.ofPattern("eee / mm / yy '\n' hh:mm a", Locale("es", "MX"))
+        DateTimeFormatter.ofPattern("EEEE / MMMM ", Locale("es", "MX"))
 
     // Parsear la fecha original al objeto LocalDateTime
     val fecha = remember { LocalDateTime.parse(fechaOriginal, formatoEntrada) }
@@ -416,6 +408,70 @@ fun FormatearFechaDay(fechaOriginal: String): String {
     return fechaFormateada
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
+fun parseCustomDate(dateStr: String): String {
+    // Formato original del string
+    val inputFormatter = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH)
+
+    // Parsear el string a ZonedDateTime
+    val parsedDate = ZonedDateTime.parse(dateStr, inputFormatter)
+
+    // Formatear a "Lunes/12/2025"
+    val outputFormatter = DateTimeFormatter.ofPattern("EEEE/dd/yyyy", Locale("es", "ES"))
+
+    return parsedDate.format(outputFormatter)
+}
+
 fun convertirAEntero(cadena: String?): Int {
     return cadena?.toIntOrNull() ?: 0
 }
+
+
+/*fun TimePickerComposable(
+    initialHour: Int,
+    initialMinute: Int,
+    onTimeSelected: (Int, Int) -> Unit,
+    onDismiss: () -> Unit = {}
+) {
+    val context = LocalContext.current
+
+    DisposableEffect(Unit) {
+        val dialog = TimePickerDialog(
+            context,
+            { _, hour: Int, minute: Int ->
+                onTimeSelected(hour, minute)
+            },
+            initialHour,
+            initialMinute,
+            false
+        )
+        dialog.setOnDismissListener { onDismiss() }
+        dialog.show()
+
+        onDispose {
+            dialog.dismiss()
+        }
+    }
+}*/
+
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun showTimePicker(
+    context: Context,
+    initial: LocalTime,
+    onTimeSelected: (LocalTime) -> Unit
+) {
+    val dialog = TimePickerDialog(
+        context,
+        { _, hour: Int, minute: Int ->
+            onTimeSelected(LocalTime.of(hour, minute))
+        },
+        initial.hour,
+        initial.minute,
+        false // false = formato 12h (AM/PM), true = 24h
+    )
+    dialog.show()
+}
+
+
