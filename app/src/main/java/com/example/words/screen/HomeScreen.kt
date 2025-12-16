@@ -51,7 +51,9 @@ fun HomeGridScreen(navController: NavController) {
         FoodItem("Lista sillas armados", R.drawable.list_chair),
         FoodItem("Lista tejido", R.drawable.completed_task),
         FoodItem("Lista pintura", R.drawable.spray_gun),
-        FoodItem("Medidas de silla", R.drawable.measure_tape),
+        FoodItem("Cotizaciones", R.drawable.measure_tape),
+        FoodItem("Historial", R.drawable.list_chair),
+        FoodItem("Precios", R.drawable.list),
     )
 
 
@@ -60,7 +62,7 @@ fun HomeGridScreen(navController: NavController) {
         columns = androidx.compose.foundation.lazy.grid.GridCells.Fixed(1),
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 20.dp),
+            .padding(top = 20.dp, bottom = 30.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -104,16 +106,22 @@ fun HomeGridScreen(navController: NavController) {
                     "Lista pintura" -> {
                         navController.navigate(Screen.ListPaint.route)
                     }
-
+                    "Historial" -> {
+                        navController.navigate(Screen.ChairHistory.route)
+                    }
+                    "Cotizaciones" -> {
+                        navController.navigate(Screen.ChairQuote.route)
+                    }
                     "Lista tejido" -> {
                         navController.navigate(Screen.ListChairsTedijo.route)
                     }
 
-                    "Medidas de silla" -> {
-                    }
-
                     "Lista horas de trabajo" -> {
                         navController.navigate(Screen.ListLaborDay.route)
+                    }
+
+                    "Precios"-> {
+                        navController.navigate(Screen.MaterialPriceScreen.route)
                     }
 
                 }

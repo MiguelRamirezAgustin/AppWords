@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.OutlinedTextField
@@ -43,8 +45,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.words.Model.ChairsViewModel
+import com.example.words.navigation.Screen
+import com.example.words.screen.component.BtnCornerRow
 import com.example.words.ui.theme.blue
 import com.example.words.ui.theme.tickColor
+import com.example.words.ui.theme.white
 
 @Composable
 fun WorkScreen(navController: NavController, viewModel: ChairsViewModel = hiltViewModel()) {
@@ -72,7 +77,7 @@ fun WorkScreen(navController: NavController, viewModel: ChairsViewModel = hiltVi
         floatingActionButton = {},
         content = { paddingValues ->
             // Contenido principal de la pantalla
-            maincontent(viewModel, paddingValues)
+            maincontent(viewModel, paddingValues,navController)
 
         }
     )
@@ -83,8 +88,8 @@ fun WorkScreen(navController: NavController, viewModel: ChairsViewModel = hiltVi
 fun maincontent(
     viewModel: ChairsViewModel,
     paddingValues: PaddingValues,
+    navController: NavController,
 ) {
-    var showToast by remember { mutableStateOf(false) }
     var texts by remember { mutableStateOf("") }
     var isTotal by remember { mutableStateOf(0.0) }
     val formData = remember {
@@ -95,6 +100,9 @@ fun maincontent(
             "Mecedora G" to "",
             "Silla ind" to "",
             "Mecedora Ch" to "",
+            "Listonero cort." to "",
+            "Porta Garrafon" to "",
+            "Bancos" to "",
         )
     }
 
@@ -102,21 +110,26 @@ fun maincontent(
         isTotal = formData.entries.sumOf { (key, value) ->
             val cantidad = value.toIntOrNull() ?: 0
             when (key) {
-                "Mecedora G" -> cantidad * 33.0
-                "Mecedora Ch" -> cantidad * 33.0
+                "Mecedora G","Mecedora Ch" -> cantidad * 33.0
                 "Silla ind" -> cantidad * 28.0
                 "Papelera" -> cantidad * 19.5
                 "Listonero" -> cantidad * 18.0
+                "Listonero cort." -> cantidad * 10.0
                 "Botaneros" -> cantidad * 19.0
+                "Porta Garrafon" -> cantidad * 18.0
+                "Bancos" -> cantidad * 25.0
                 else -> 0.0
             }
         }
     }
-
-    Column(modifier = Modifier.padding(paddingValues)) {
+    val tieneAlMenosUnValor = formData.values.any { value ->
+        val cantidad = value.toIntOrNull() ?: 0
+        cantidad > 0
+    }
+    Column(modifier = Modifier.padding(paddingValues). verticalScroll(rememberScrollState())) {
         Column(
             modifier = Modifier
-                .padding(top = 5.dp, bottom = 10.dp)
+                .padding(top = 5.dp, bottom = 15.dp)
                 .fillMaxWidth()
         ) {
             Column(
@@ -127,16 +140,16 @@ fun maincontent(
                 Row(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.weight(2f)) {
                         Row {
-                            Text("Mecedora G.", color = blue, fontSize = 18.sp)
+                            Text("Mecedoras", color = blue, fontSize = 18.sp)
                             Text(
                                 " : $33", color = blue, fontSize = 18.sp,
                                 fontWeight = FontWeight.Medium,
                             )
                         }
                         Row {
-                            Text("Mecedora Ch.", color = blue, fontSize = 18.sp)
+                            Text("Porta Gr.", color = blue, fontSize = 18.sp)
                             Text(
-                                " : $33", color = blue, fontSize = 18.sp,
+                                " : $18", color = blue, fontSize = 18.sp,
                                 fontWeight = FontWeight.Medium
                             )
                         }
@@ -144,6 +157,13 @@ fun maincontent(
                             Text("Sillas Ind.", color = blue, fontSize = 18.sp)
                             Text(
                                 " : $28", color = blue, fontSize = 18.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                        Row {
+                            Text("Banco.", color = blue, fontSize = 18.sp)
+                            Text(
+                                " : $25", color = blue, fontSize = 18.sp,
                                 fontWeight = FontWeight.Medium
                             )
                         }
@@ -161,6 +181,14 @@ fun maincontent(
                             Text("Listonero", color = blue, fontSize = 18.sp)
                             Text(
                                 " : $18", color = blue, fontSize = 18.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+
+                        }
+                        Row {
+                            Text("Listonero cort.", color = blue, fontSize = 18.sp)
+                            Text(
+                                " : $10", color = blue, fontSize = 18.sp,
                                 fontWeight = FontWeight.Medium
                             )
 
@@ -206,12 +234,6 @@ fun maincontent(
                                         label = item,
                                         value = formData[item] ?: "",
                                         onValueChange = { newValue ->
-                                            Log.d("Print key ========>", " key: ${key}")
-                                            Log.d(
-                                                "Print key ========>",
-                                                " formData: ${formData[item]}"
-                                            )
-                                            Log.d("Print key ========>", " newValue: ${newValue}")
                                             formData[item] = newValue
                                             calcularTotal()
                                         }
@@ -233,7 +255,6 @@ fun maincontent(
                             ),
                             value = texts,
                             onValueChange = {
-                                Log.d("Print Log ========>", " Screeen::${it}. texts::${texts} ")
                                 if (!it.isEmpty()) {
                                     texts = it
                                 }
@@ -242,14 +263,15 @@ fun maincontent(
                             modifier = Modifier
                                 .padding( end = 10.dp, start = 10.dp, bottom = 10.dp)
                                 .fillMaxWidth()
-                                .height(65.dp)
                                 .background(Color.White),
                             textStyle = TextStyle(
-                                fontSize = 24.sp, // Cambia el tamaño del texto aquí
-                                color = Color.Black // Opcional: Cambia el color del texto
+                                fontSize = 24.sp,
+                                color = Color.Black
                             ),
                             label = { Text( text ="Nota") },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                            minLines = 1,
+                            maxLines = Int.MAX_VALUE
                         )
                     }
 
@@ -271,14 +293,17 @@ fun maincontent(
                                     listonero = formData["Listonero"]?.toIntOrNull() ?: 0,
                                     botanero = formData["Botaneros"]?.toIntOrNull() ?: 0,
                                     sueldo = isTotal.toString(),
-                                    nota = texts
+                                    nota = texts,
+                                    listoneroCortados = formData["Listonero cort."]?.toIntOrNull() ?: 0,
+                                    bancos = formData["Bancos"]?.toIntOrNull() ?: 0,
+                                    portaGarrafon = formData["Porta Garrafon"]?.toIntOrNull() ?: 0,
                                 )
-                                showToast = true
                                 texts = ""
+                                navController.navigate(Screen.ListChairs.route)
 
                             },
                             style = TextStyle(
-                                color = Color.Black,
+                                color = if (tieneAlMenosUnValor) white else Color.Black,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 16.sp
                             ),
@@ -287,19 +312,20 @@ fun maincontent(
                             colorBorder = tickColor,
                             elevation = ButtonDefaults.elevatedButtonElevation(
                                 defaultElevation = 0.dp
-                            )
+                            ),
+                            enabled = tieneAlMenosUnValor
                         )
 
                         BtnCornerRow(
                             title = "Limpiar",
                             onClick = {
                                 formData.keys.forEach { key ->
-                                    formData[key] = "" // Establece cada campo como vacío
+                                    formData[key] = ""
                                 }
                                 calcularTotal()
                             },
                             style = TextStyle(
-                                color = tickColor,
+                                color = white,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 16.sp
                             ),
@@ -308,15 +334,14 @@ fun maincontent(
                             colorBorder = tickColor,
                             elevation = ButtonDefaults.elevatedButtonElevation(
                                 defaultElevation = 0.dp
-                            )
+                            ),
+                            enabled = true
                         )
                     }
 
                 }
             }
-            if (showToast) {
-                showToast = false // Restablecer para evitar repetir el toast
-            }
+
         }
 
     }

@@ -236,7 +236,7 @@ fun maincontentListPaint(viewModel: PaintViewModel, paddingValues: PaddingValues
                                 modifier = Modifier.padding(
                                     top = 8.dp,
                                 ),
-                                text = FormatearFechaDay(it.update.toString()).toString(),
+                                text = FormatearFechaDay(it.update.toString()),
                                 color = blue,
                                 fontSize = 15.sp,
                                 lineHeight = 24.sp,

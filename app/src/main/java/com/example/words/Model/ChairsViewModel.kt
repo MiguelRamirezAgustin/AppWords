@@ -37,6 +37,9 @@ class ChairsViewModel @Inject constructor(
         listonero: Int,
         botanero: Int,
         sueldo: String,
+        listoneroCortados :Int,
+        bancos :Int,
+        portaGarrafon :Int,
         nota:String
     ) {
         viewModelScope.launch {
@@ -50,7 +53,10 @@ class ChairsViewModel @Inject constructor(
                 botanero.toString(),
                 sueldo = sueldo,
                 nota = nota,
-                Date()
+                update = Date(),
+                bancos = bancos.toString(),
+                portaGarrafon = portaGarrafon.toString(),
+                listoneroCortados = listoneroCortados.toString(),
             )
             repository.insertChairs(newChair)
         }

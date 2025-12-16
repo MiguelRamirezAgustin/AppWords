@@ -3,10 +3,12 @@ package com.example.words.Model
 import android.content.Context
 import androidx.room.Room
 import com.example.words.db.AppDatabase
+import com.example.words.db.ChairMovementsDAO
 import com.example.words.db.ChairsDao
 import com.example.words.db.ChairsTejidoDao
 import com.example.words.db.PaintDao
 import com.example.words.db.LaborDayDao
+import com.example.words.db.MaterialPriceDAO
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,7 +28,7 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "app_database"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 
     @Provides
@@ -47,6 +49,16 @@ object DatabaseModule {
     @Provides
     fun provideChairTejidoDao(database: AppDatabase): ChairsTejidoDao {
         return database.chairTejido()
+    }
+
+    @Provides
+    fun provideChairMovementsDao(database: AppDatabase): ChairMovementsDAO {
+        return database.chairsMovements()
+    }
+
+    @Provides
+    fun provideMaterialPriceDao(database: AppDatabase): MaterialPriceDAO {
+        return database.materialPrice()
     }
 
 

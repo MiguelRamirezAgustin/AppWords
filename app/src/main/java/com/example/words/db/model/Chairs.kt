@@ -25,6 +25,12 @@ data class Chairs(
     var botanero: String,
     @ColumnInfo(name = "sueldo")
     var sueldo :String,
+    @ColumnInfo(name = "bancos")
+    var bancos :String,
+    @ColumnInfo(name = "porta_garrafon")
+    var portaGarrafon :String,
+    @ColumnInfo(name = "listonero_cortados")
+    var listoneroCortados :String,
     @ColumnInfo(name = "nota")
     var nota :String,
     @ColumnInfo(name = "update")

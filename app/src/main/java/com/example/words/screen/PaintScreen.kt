@@ -41,10 +41,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.words.Model.ChairsViewModel
 import com.example.words.Model.PaintViewModel
 import com.example.words.navigation.Screen
-import com.example.words.ui.theme.LightBrown
+import com.example.words.screen.component.BtnCornerRow
 import com.example.words.ui.theme.blue
 import com.example.words.ui.theme.tickColor
 
@@ -207,7 +206,8 @@ fun maincontentListPainter(
                     colorBorder = tickColor,
                     elevation = ButtonDefaults.elevatedButtonElevation(
                         defaultElevation = 0.dp
-                    )
+                    ),
+                    enabled = true
                 )
 
 
@@ -230,7 +230,8 @@ fun maincontentListPainter(
                     colorBorder = tickColor,
                     elevation = ButtonDefaults.elevatedButtonElevation(
                         defaultElevation = 0.dp
-                    )
+                    ),
+                    enabled = true
                 )
 
             }

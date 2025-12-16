@@ -6,6 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.words.screen.ChairHistory
+import com.example.words.screen.ChairQuote
 import com.example.words.screen.ChairsTejidoScreen
 import com.example.words.screen.HomeScreen
 import com.example.words.screen.LaborDayScreen
@@ -13,6 +15,7 @@ import com.example.words.screen.ListChairs
 import com.example.words.screen.ListChairsTedijo
 import com.example.words.screen.ListLaborDay
 import com.example.words.screen.ListPaint
+import com.example.words.screen.MaterialPriceScreen
 import com.example.words.screen.PaintScreen
 import com.example.words.screen.WorkScreen
 
@@ -75,6 +78,26 @@ fun SetupNavGraph(navController: NavHostController) {
                 navController = navController
             )
         }
+
+        composable(route = Screen.ChairHistory.route) {
+            ChairHistory(
+                navController = navController
+            )
+        }
+
+        composable(route = Screen.ChairQuote.route) {
+            ChairQuote(
+                navController = navController
+            )
+        }
+
+        composable(route = Screen.MaterialPriceScreen.route) {
+            MaterialPriceScreen(
+                navController = navController
+            )
+        }
+
+
 
 
 

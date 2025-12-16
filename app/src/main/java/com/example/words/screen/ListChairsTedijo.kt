@@ -1,5 +1,6 @@
 package com.example.words.screen
 
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -29,8 +31,10 @@ import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -48,6 +53,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.words.Model.ChairsTejidoViewModel
 import com.example.words.Model.ChairsViewModel
+import com.example.words.db.model.ChairsTejido
 import com.example.words.ui.theme.blue
 import com.example.words.ui.theme.progressBlue
 
@@ -84,6 +90,16 @@ fun ListChairsTedijo(navController: NavController, viewModel: ChairsTejidoViewMo
 
 @Composable
 fun maincontentList(viewModel: ChairsTejidoViewModel, paddingValues: PaddingValues) {
+    val precios = mapOf(
+        "sillaGrande" to 40,
+        "sillaChica" to 30,
+        "sillaIndividual" to 25,
+        "bancos" to 50,
+        "cuadrados" to 15,
+        "cuadrado_mini" to 10
+    )
+
+    val context = LocalContext.current
     val scrollState = rememberScrollState()
     val chairs by viewModel.all.observeAsState()  // Escuchar cambios en la BD
     Log.d("Print Log ========>", " ChairsTejidoViewModel::Resul: ${chairs}")
@@ -98,15 +114,14 @@ fun maincontentList(viewModel: ChairsTejidoViewModel, paddingValues: PaddingValu
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
-                    ) {}
-                    .height(145.dp),
+                    ) {},
                 contentColor = Color.White,
                 border = BorderStroke(1.dp, progressBlue),
                 shape = RoundedCornerShape(10.dp),
                 elevation = 9.dp,
                 backgroundColor = Color.White
             ) {
-                Column(modifier = Modifier.fillMaxSize()) {
+                Column(modifier = Modifier.fillMaxSize().padding(bottom = 10.dp)) {
 
                     Row(
                         modifier = Modifier
@@ -223,7 +238,7 @@ fun maincontentList(viewModel: ChairsTejidoViewModel, paddingValues: PaddingValu
                                 modifier = Modifier.padding(
                                     top = 8.dp,
                                 ),
-                                text = "Dia: '\n'"+ FormatearFechaDay(it.update.toString()).toString(),
+                                text = "Dia: "+ FormatearFechaDay(it.update.toString()),
                                 color = blue,
                                 fontSize = 15.sp,
                                 lineHeight = 24.sp,
@@ -244,7 +259,6 @@ fun maincontentList(viewModel: ChairsTejidoViewModel, paddingValues: PaddingValu
                                         disabledContainerColor = Color.Red
                                     ),
                                     onClick = {
-                                        //onEvent(Event.Delete(it.id))
                                         viewModel.deleteChair(it.id)
                                     }) {
                                     androidx.compose.material3.Icon(
@@ -258,12 +272,57 @@ fun maincontentList(viewModel: ChairsTejidoViewModel, paddingValues: PaddingValu
                                         containerColor = Color.Transparent,
                                         contentColor = Color.Blue,
                                         disabledContentColor = Color.White,
-                                        disabledContainerColor = Color.Red
+                                        disabledContainerColor = Color.Blue
                                     ), onClick = {
-                                        //onEvent(Event.Load(it.id))
+
+                                        val builder = StringBuilder()
+                                        builder.append("Revisa si esta bien:\n\n")
+
+                                        if (it.sillaGrande.toInt() > 0) {
+                                            val precio = precios["sillaGrande"] ?: 0
+                                            val subtotal = it.sillaGrande.toInt() * precio
+                                            builder.append("Silla Grande = ${it.sillaGrande} x $$precio = $$subtotal\n")
+                                        }
+                                        if (it.sillaChica.toInt() > 0) {
+                                            val precio = precios["sillaChica"] ?: 0
+                                            val subtotal = it.sillaChica.toInt() * precio
+                                            builder.append("Silla Chica = ${it.sillaChica} x $$precio = $$subtotal\n")
+                                        }
+                                        if (it.sillaIndividual.toInt() > 0) {
+                                            val precio = precios["sillaIndividual"] ?: 0
+                                            val subtotal = it.sillaIndividual.toInt() * precio
+                                            builder.append("Silla Individual = ${it.sillaIndividual} x $$precio = $$subtotal\n")
+                                        }
+                                        if (it.bancos.toInt() > 0) {
+                                            val precio = precios["bancos"] ?: 0
+                                            val subtotal = it.bancos.toInt() * precio
+                                            builder.append("Banco = ${it.bancos} x $$precio = $$subtotal\n")
+                                        }
+                                        if (it.cuadrados.toInt() > 0) {
+                                            val precio = precios["cuadrados"] ?: 0
+                                            val subtotal = it.cuadrados.toInt() * precio
+                                            builder.append("Cuadrado = ${it.cuadrados} x $$precio = $$subtotal\n")
+                                        }
+                                        if (it.cuadrado_mini.toInt() > 0) {
+                                            val precio = precios["cuadrado_mini"] ?: 0
+                                            val subtotal = it.cuadrado_mini.toInt() * precio
+                                            builder.append("Cuadrado Mini = ${it.cuadrado_mini} x $$precio = $$subtotal\n")
+                                        }
+
+                                        if (builder.isNotEmpty()) {
+                                            builder.append("\nTotal: $${it.total}")
+                                        }
+
+                                        val sendIntent = Intent().apply {
+                                            action = Intent.ACTION_SEND
+                                            putExtra(Intent.EXTRA_TEXT, builder.toString())
+                                            type = "text/plain"
+                                        }
+                                        val shareIntent = Intent.createChooser(sendIntent, null)
+                                        context.startActivity(shareIntent)
                                     }) {
                                     androidx.compose.material3.Icon(
-                                        Icons.Rounded.Edit,
+                                        Icons.Rounded.Share,
                                         contentDescription = null
                                     )
                                 }
@@ -274,7 +333,7 @@ fun maincontentList(viewModel: ChairsTejidoViewModel, paddingValues: PaddingValu
                         .fillMaxWidth().padding(start = 10.dp, end = 10.dp)
                         .background(Color.White),
                         verticalArrangement = Arrangement.Center) {
-                        androidx.compose.material3.Text(
+                       Text(
                             modifier = Modifier,
                             textAlign = TextAlign.Start,
                             text = "Nota: " + it.nota,

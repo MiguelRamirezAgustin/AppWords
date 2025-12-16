@@ -48,10 +48,8 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 import android.app.TimePickerDialog
 import android.content.Context
-import android.content.res.ColorStateList
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -60,10 +58,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import com.example.words.R
+import com.example.words.screen.component.BtnCustoms
 import com.example.words.ui.theme.blue
-import com.example.words.ui.theme.isColorBlue
+import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.LocalTime
+import java.util.Date
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -242,131 +242,7 @@ fun CrudScreenSetup(viewModel: LaborDayViewModel, navController: NavController) 
 }
 
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun HorarioItem(
-    entrada: LocalTime,
-    salida: LocalTime,
-    onTimeChange: (LocalTime, LocalTime) -> Unit,
-    onDelete: () -> Unit
-) {
-    var showEntradaPicker by remember { mutableStateOf(false) }
-    var showSalidaPicker by remember { mutableStateOf(false) }
-    val formatoHora = DateTimeFormatter.ofPattern("hh:mm a", Locale("es", "MX"))
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 10.dp, top = 10.dp)
-    ) {
-        Row(modifier = Modifier.weight(2f)) {
-
-            Text(
-                modifier = Modifier,
-                fontSize = 20.sp,
-                text = "Entrada: ${entrada.format(formatoHora)}"
-            )
-
-            BtnCustoms(
-                text = "Entrada",
-                onClick = {
-                    showEntradaPicker = true
-                },
-                colors = ButtonDefaults.buttonColors(
-                    disabledContainerColor = Color.White,
-                    contentColor = LightBrown,
-                    containerColor = LightBrown
-
-                ),
-                modifier = Modifier
-                    .height(50.dp)
-                    .padding(top = 10.dp),
-                elevation = ButtonDefaults.elevatedButtonElevation(
-                    defaultElevation = 0.dp
-                ),
-                style = TextStyle(
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
-            )
-
-            Spacer(Modifier.height(8.dp))
-
-            Text(
-                modifier = Modifier,
-                fontSize = 20.sp,
-                text = "Salida:  ${salida.format(formatoHora)}"
-            )
-
-            BtnCustoms(
-                text = "Salida",
-                onClick = {
-                    showSalidaPicker = true
-                },
-                colors = ButtonDefaults.buttonColors(
-                    disabledContainerColor = Color.White,
-                    contentColor = LightBrown,
-                    containerColor = LightBrown
-
-                ),
-                modifier = Modifier
-                    .height(50.dp)
-                    .padding(top = 10.dp),
-                elevation = ButtonDefaults.elevatedButtonElevation(
-                    defaultElevation = 0.dp
-                ),
-                style = TextStyle(
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
-            )
-        }
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-            IconButton(
-                onClick = onDelete
-            ) {
-                Icon(
-                    modifier = Modifier.size(60.dp),
-                    painter = painterResource(id = R.drawable.alarm),
-                    contentDescription = "Agregar",
-                    tint = Color.Unspecified
-                )
-            }
-        }
-    }
-
-    // Pickers
-    /* if (showEntradaPicker) {
-         TimePickerComposable(
-             initialHour = entrada.hour,
-             initialMinute = entrada.minute,
-             onTimeSelected = { h, m ->
-                 onTimeChange(LocalTime.of(h, m), salida)
-                 showEntradaPicker = false
-             },
-             onDismiss = { showEntradaPicker = false }
-         )
-     }
-
-     if (showSalidaPicker) {
-         TimePickerComposable(
-             initialHour = salida.hour,
-             initialMinute = salida.minute,
-             onTimeSelected = { h, m ->
-                 onTimeChange(entrada, LocalTime.of(h, m))
-                 showSalidaPicker = false
-             },
-             onDismiss = { showSalidaPicker = false }
-         )
-     }*/
-}
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -392,20 +268,11 @@ fun FormatearFecha(fechaOriginal: String): String {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun FormatearFechaDay(fechaOriginal: String): String {
-    // Definir el patrón del formato de la fecha original
-    val formatoEntrada = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH)
-    // Definir el patrón del formato de la fecha deseada
-    val formatoSalida =
-        DateTimeFormatter.ofPattern("EEE/mm/yy", Locale("es", "MX"))
+    val inputFormat = SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH)
+    val outputFormat = SimpleDateFormat("MMM-dd", Locale.ENGLISH)
 
-    // Parsear la fecha original al objeto LocalDateTime
-    val fecha = remember { LocalDateTime.parse(fechaOriginal, formatoEntrada) }
-    // Formatear la fecha al formato deseado
-    val fechaFormateada = remember { fecha.format(formatoSalida) }
-
-    // Mostrar la fecha formateada en un componente Text
-
-    return fechaFormateada
+    val date: Date = inputFormat.parse(fechaOriginal)!!
+    return outputFormat.format(date)
 }
 
 @RequiresApi(Build.VERSION_CODES.O)

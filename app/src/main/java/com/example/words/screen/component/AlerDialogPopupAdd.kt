@@ -1,7 +1,6 @@
-package com.example.words.screen
+package com.example.words.screen.component
 
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,17 +12,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -34,47 +28,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.DarkGray
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import com.example.words.Model.Event
-import com.example.words.ui.theme.GreyLight
 import com.example.words.ui.theme.LightBrown
-import com.example.words.ui.theme.LightGrey
-import com.example.words.ui.theme.TextFieldBorder
 import com.example.words.ui.theme.blue
-import com.example.words.ui.theme.light_tangerine
 import com.example.words.ui.theme.tickColor
-import com.example.words.ui.theme.white
 
 @Composable
-fun AlerDialogPopupAdd(openDialog: Boolean, onEvent: (Event) -> Unit) {
-    val focusManager = LocalFocusManager.current
-    val focusRequester = FocusRequester()
-    val keyboardController = LocalSoftwareKeyboardController.current
-    val isFocused = remember { mutableStateOf(false) }
+fun AlerDialogPopupAdd(openDialog: MutableState<Boolean>, onEvent: () -> Unit) {
 
-    var texts by remember { mutableStateOf("") }
-
-    if (openDialog) {
+    if (openDialog.value) {
         Popup(
             onDismissRequest = {
-                openDialog == false
+                openDialog.value = false
             },
             properties = PopupProperties(focusable = true),
             alignment = Alignment.BottomCenter
@@ -83,14 +58,14 @@ fun AlerDialogPopupAdd(openDialog: Boolean, onEvent: (Event) -> Unit) {
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.5f))
-                    .clickable(onClick = { openDialog == false })
+                    .clickable(onClick = { openDialog.value = false })
                     .padding(start = 16.dp, end = 16.dp, bottom = 38.dp)
 
             ) {
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(24.dp))
-                        .align(Alignment.BottomCenter)
+                        .align(Alignment.Center)
                         .background(Color.White)
 
                 ) {
@@ -104,54 +79,30 @@ fun AlerDialogPopupAdd(openDialog: Boolean, onEvent: (Event) -> Unit) {
                                 .fillMaxWidth()
                         ) {
                             Text(
-                                text = "Agregar nuevo dia",
-                                fontSize = 30.sp,
+                                text = "Eliminar lista de precios",
+                                fontSize = 20.sp,
                                 color = tickColor,
-                                modifier = Modifier.padding(top = 5.dp, bottom = 20.dp)
+                                modifier = Modifier
+                                    .padding(top = 5.dp, bottom = 20.dp)
+                                    .align(Alignment.CenterHorizontally)
                             )
-                            OutlinedTextField(
-                                colors = TextFieldDefaults.outlinedTextFieldColors(
-                                    textColor = blue,
-                                    backgroundColor = Color.White,
-                                    focusedBorderColor = tickColor
-
-                                ),
-                                value = texts,
-                                onValueChange = {
-                                    // Filtrar solo los caracteres numéricos y limitar la longitud
-                                    val filteredText = it.filter { char -> char.isDigit() }.take(2)
-                                    texts = filteredText
-                                    Log.d("Print Log ========>", " Screeen::${it} ")
-                                    if (!it.isEmpty()){
-                                        onEvent(Event.SetText(it))
-                                    }
-
-                                },
-                                label = { Text("Horas") },
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                            )
-
-
-
-
                         }
                         Spacer(modifier = Modifier.padding(bottom = 16.dp))
-                        Row ( modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                bottom = 24.dp,
-                                start = 24.dp,
-                                end = 24.dp,
-                                top = 10.dp
-                            ), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    bottom = 24.dp,
+                                    start = 24.dp,
+                                    end = 24.dp,
+                                    top = 10.dp
+                                ), horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
 
                             BtnCustoms(
                                 text = "Confirmar",
                                 onClick = {
-                                    if (!texts.isEmpty()){
-                                        onEvent(Event.Save)
-                                    }
-
+                                    onEvent.invoke()
                                 },
                                 colors = ButtonDefaults.buttonColors(
                                     disabledContainerColor = Color.White,
@@ -173,7 +124,7 @@ fun AlerDialogPopupAdd(openDialog: Boolean, onEvent: (Event) -> Unit) {
                             BtnCustoms(
                                 text = "Cancelar",
                                 onClick = {
-                                    onEvent(Event.CloseDialog)
+                                    openDialog.value = false
                                 },
                                 colors = ButtonDefaults.buttonColors(
                                     disabledContainerColor = Color.White,

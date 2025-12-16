@@ -43,9 +43,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.words.Model.ChairsTejidoViewModel
-import com.example.words.Model.ChairsViewModel
+import com.example.words.navigation.Screen
+import com.example.words.screen.component.BtnCornerRow
 import com.example.words.ui.theme.blue
 import com.example.words.ui.theme.tickColor
+import com.example.words.ui.theme.white
 
 @Composable
 fun ChairsTejidoScreen(navController: NavController, viewModel: ChairsTejidoViewModel = hiltViewModel()) {
@@ -73,7 +75,7 @@ fun ChairsTejidoScreen(navController: NavController, viewModel: ChairsTejidoView
         floatingActionButton = {},
         content = { paddingValues ->
             // Contenido principal de la pantalla
-            maincontentChair(viewModel, paddingValues)
+            maincontentChair(viewModel, paddingValues,navController)
 
         }
     )
@@ -84,6 +86,7 @@ fun ChairsTejidoScreen(navController: NavController, viewModel: ChairsTejidoView
 fun maincontentChair(
     viewModel: ChairsTejidoViewModel,
     paddingValues: PaddingValues,
+    navController: NavController,
 ) {
     var showToast by remember { mutableStateOf(false) }
     var texts by remember { mutableStateOf("") }
@@ -112,6 +115,11 @@ fun maincontentChair(
                 else -> 0.0
             }
         }
+    }
+
+    val tieneAlMenosUnValor = formData.values.any { value ->
+        val cantidad = value.toIntOrNull() ?: 0
+        cantidad > 0
     }
 
     Column(modifier = Modifier.padding(paddingValues)) {
@@ -276,10 +284,10 @@ fun maincontentChair(
                                 )
                                 showToast = true
                                 texts = ""
-
+                                navController.navigate(Screen.ListChairsTedijo.route)
                             },
                             style = TextStyle(
-                                color = Color.Black,
+                                color = if (tieneAlMenosUnValor) white else Color.Black,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 16.sp
                             ),
@@ -288,7 +296,8 @@ fun maincontentChair(
                             colorBorder = tickColor,
                             elevation = ButtonDefaults.elevatedButtonElevation(
                                 defaultElevation = 0.dp
-                            )
+                            ),
+                            enabled = tieneAlMenosUnValor
                         )
 
                         BtnCornerRow(
@@ -300,7 +309,7 @@ fun maincontentChair(
                                 calcularTotal()
                             },
                             style = TextStyle(
-                                color = tickColor,
+                                color = white,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 16.sp
                             ),
@@ -309,16 +318,14 @@ fun maincontentChair(
                             colorBorder = tickColor,
                             elevation = ButtonDefaults.elevatedButtonElevation(
                                 defaultElevation = 0.dp
-                            )
+                            ),
+                            enabled = true
                         )
                     }
 
                 }
             }
-            if (showToast) {
-                ShowToast("¡Hola desde Compose!")
-                showToast = false // Restablecer para evitar repetir el toast
-            }
+
         }
 
     }
