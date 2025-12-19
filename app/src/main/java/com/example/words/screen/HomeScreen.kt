@@ -44,16 +44,14 @@ fun HomeScreen(navController: NavController) {
 @Composable
 fun HomeGridScreen(navController: NavController) {
     val foodItems = listOf(
-        FoodItem("Dia de trabajo", R.drawable.horas_trabjajo),
+//        FoodItem("Dia de trabajo", R.drawable.horas_trabjajo),
         FoodItem("Soldadura de sillas", R.drawable.welding),
         FoodItem("Pago de tejido", R.drawable.money),
         FoodItem("Pago de pintura", R.drawable.cash_delivery),
         FoodItem("Lista sillas armados", R.drawable.list_chair),
         FoodItem("Lista tejido", R.drawable.completed_task),
-        FoodItem("Lista pintura", R.drawable.spray_gun),
-        FoodItem("Cotizaciones", R.drawable.measure_tape),
-        FoodItem("Historial", R.drawable.list_chair),
-        FoodItem("Precios", R.drawable.list),
+//        FoodItem("Lista pintura", R.drawable.spray_gun),
+        FoodItem("Notas", R.drawable.list),
     )
 
 
@@ -83,9 +81,9 @@ fun HomeGridScreen(navController: NavController) {
             FoodItemCard(foodItems[index], onEvent = { items ->
                 Log.d("Print Log ========>", " Screeen:: Resul: ${items}")
                 when (items) {
-                    "Dia de trabajo" -> {
-                        navController.navigate(Screen.LaborDayScreen.route)
-                    }
+//                    "Dia de trabajo" -> {
+//                        navController.navigate(Screen.LaborDayScreen.route)
+//                    }
 
                     "Soldadura de sillas" -> {
                         navController.navigate(Screen.WorkScreen.route)
@@ -95,23 +93,18 @@ fun HomeGridScreen(navController: NavController) {
                         navController.navigate(Screen.ChairsTejidoScreen.route)
                     }
 
-                    "Pago de pintura" -> {
-                        navController.navigate(Screen.PaintScreen.route)
-                    }
+//                    "Pago de pintura" -> {
+//                        navController.navigate(Screen.PaintScreen.route)
+//                    }
 
                     "Lista sillas armados" -> {
                         navController.navigate(Screen.ListChairs.route)
                     }
 
-                    "Lista pintura" -> {
-                        navController.navigate(Screen.ListPaint.route)
-                    }
-                    "Historial" -> {
-                        navController.navigate(Screen.ChairHistory.route)
-                    }
-                    "Cotizaciones" -> {
-                        navController.navigate(Screen.ChairQuote.route)
-                    }
+//                    "Lista pintura" -> {
+//                        navController.navigate(Screen.ListPaint.route)
+//                    }
+
                     "Lista tejido" -> {
                         navController.navigate(Screen.ListChairsTedijo.route)
                     }
@@ -120,20 +113,14 @@ fun HomeGridScreen(navController: NavController) {
                         navController.navigate(Screen.ListLaborDay.route)
                     }
 
-                    "Precios"-> {
-                        navController.navigate(Screen.MaterialPriceScreen.route)
+                    "Notas"-> {
+                        navController.navigate(Screen.NewNoteScreen.route)
                     }
 
                 }
             })
 
-            if ((index + 1) % 4 == 0) {
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(100.dp)
-                ) // Espacio o salto de línea visual
-            }
+
         }
     }
 

@@ -16,6 +16,7 @@ import com.example.words.screen.ListChairsTedijo
 import com.example.words.screen.ListLaborDay
 import com.example.words.screen.ListPaint
 import com.example.words.screen.MaterialPriceScreen
+import com.example.words.screen.NewNoteScreen
 import com.example.words.screen.PaintScreen
 import com.example.words.screen.WorkScreen
 
@@ -93,6 +94,12 @@ fun SetupNavGraph(navController: NavHostController) {
 
         composable(route = Screen.MaterialPriceScreen.route) {
             MaterialPriceScreen(
+                navController = navController
+            )
+        }
+
+        composable(route = Screen.NewNoteScreen.route) {
+            NewNoteScreen(
                 navController = navController
             )
         }
